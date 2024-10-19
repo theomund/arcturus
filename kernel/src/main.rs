@@ -16,33 +16,35 @@
 
 #![no_main]
 #![no_std]
+#![warn(clippy::pedantic)]
+
+mod io;
+mod serial;
 
 use core::arch::asm;
-
-use limine::request::FramebufferRequest;
-use limine::BaseRevision;
+use limine::{
+    request::{RequestsEndMarker, RequestsStartMarker},
+    BaseRevision,
+};
 
 #[used]
 #[link_section = ".requests"]
 static BASE_REVISION: BaseRevision = BaseRevision::new();
 
 #[used]
-#[link_section = ".requests"]
-static FRAMEBUFFER_REQUEST: FramebufferRequest = FramebufferRequest::new();
+#[link_section = ".requests_start_marker"]
+static _START_MARKER: RequestsStartMarker = RequestsStartMarker::new();
+
+#[used]
+#[link_section = ".requests_end_marker"]
+static _END_MARKER: RequestsEndMarker = RequestsEndMarker::new();
 
 #[no_mangle]
 extern "C" fn kmain() -> ! {
-    if let Some(framebuffer_response) = FRAMEBUFFER_REQUEST.get_response() {
-        if let Some(framebuffer) = framebuffer_response.framebuffers().next() {
-            for i in 0..100_u64 {
-                let offset = i * framebuffer.pitch() + i * 4;
-                let address = framebuffer.addr().wrapping_add(offset as usize) as *mut u32;
-                unsafe {
-                    *(address) = 0xFFFFFFFF;
-                }
-            }
-        }
-    }
+    assert!(BASE_REVISION.is_supported());
+
+    serial::init().expect("Failed to initialize serial port driver.");
+
     halt();
 }
 
