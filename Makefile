@@ -67,3 +67,7 @@ run-bios: build
 .PHONY: run-uefi
 run-uefi: $(OVMF) build
 	qemu-system-x86_64 -M q35 -m 2G -drive if=pflash,unit=0,format=raw,file=$(OVMF),readonly=on -cdrom $(IMAGE)
+
+.PHONY: test
+test:
+	cargo test
