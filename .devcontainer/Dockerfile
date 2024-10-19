@@ -21,6 +21,7 @@ RUN dnf install -y \
     terra-release-40 \
     && dnf clean all
 RUN dnf install -y \
+    bash-completion-2.11 \
     edk2-ovmf-20240813 \
     gcc-14.2.1 \
     gdb-15.1 \
