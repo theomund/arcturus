@@ -21,13 +21,14 @@ BOOT_CONFIG := bootloader/limine.conf
 BOOT_EFI := $(addprefix /usr/share/limine/,BOOTIA32.EFI BOOTX64.EFI)
 IMAGE := target/arcturus.iso
 IMAGE_ROOT := target/iso_root
-KERNEL := target/x86_64-unknown-none/debug/kernel
+KERNEL_BINARY := target/x86_64-unknown-none/debug/kernel
+KERNEL_SOURCE := $(shell find kernel -type f)
 OVMF := /usr/share/edk2/ovmf/OVMF_CODE.fd
 
-$(IMAGE): $(BOOT_BIN) $(BOOT_CONFIG) $(BOOT_EFI) $(KERNEL)
+$(IMAGE): $(BOOT_BIN) $(BOOT_CONFIG) $(BOOT_EFI) $(KERNEL_BINARY)
 	rm -rf $(IMAGE_ROOT)
 	mkdir -p $(IMAGE_ROOT)/boot/
-	cp -v $(KERNEL) $(IMAGE_ROOT)/boot/
+	cp -v $(KERNEL_BINARY) $(IMAGE_ROOT)/boot/
 	mkdir -p $(IMAGE_ROOT)/boot/limine
 	cp -v $(BOOT_BIN) $(BOOT_CONFIG) $(IMAGE_ROOT)/boot/limine/
 	mkdir -p $(IMAGE_ROOT)/EFI/BOOT/
@@ -39,7 +40,7 @@ $(IMAGE): $(BOOT_BIN) $(BOOT_CONFIG) $(BOOT_EFI) $(KERNEL)
 			$(IMAGE_ROOT) -o $(IMAGE)
 	rm -rf $(IMAGE_ROOT)
 
-$(KERNEL):
+$(KERNEL_BINARY): $(KERNEL_SOURCE)
 	cargo build -p kernel
 
 .PHONY: all
@@ -51,6 +52,18 @@ build: $(IMAGE)
 .PHONY: clean
 clean:
 	cargo clean
+
+.PHONY: debug-bios
+debug-bios:
+	qemu-system-x86_64 -s -S -M q35 -m 2G -cdrom $(IMAGE)
+
+.PHONY: debug-gdb
+debug-gdb:
+	rust-gdb -ex "file $(KERNEL_BINARY)" -ex "target remote localhost:1234"
+
+.PHONY: debug-uefi
+debug-uefi:
+	qemu-system-x86_64 -s -S -M q35 -m 2G -drive if=pflash,unit=0,format=raw,file=$(OVMF),readonly=on -cdrom $(IMAGE)
 
 .PHONY: format
 format:
