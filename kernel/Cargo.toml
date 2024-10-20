@@ -26,4 +26,5 @@ bench = false
 test = false
 
 [dependencies]
+bitflags = "2.6.0"
 limine = "0.3.1"
