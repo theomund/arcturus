@@ -18,10 +18,11 @@
 #![no_std]
 #![warn(clippy::pedantic)]
 
-mod io;
+mod cpu;
+mod gdt;
 mod serial;
 
-use core::arch::asm;
+use cpu::instructions;
 use limine::{
     request::{RequestsEndMarker, RequestsStartMarker},
     BaseRevision,
@@ -43,6 +44,7 @@ static _END_MARKER: RequestsEndMarker = RequestsEndMarker::new();
 extern "C" fn kmain() -> ! {
     assert!(BASE_REVISION.is_supported());
 
+    gdt::init();
     serial::init().expect("Failed to initialize serial port driver.");
 
     halt();
@@ -54,10 +56,8 @@ fn kpanic(_info: &core::panic::PanicInfo) -> ! {
 }
 
 fn halt() -> ! {
-    unsafe {
-        asm!("cli");
-        loop {
-            asm!("hlt");
-        }
+    instructions::cli();
+    loop {
+        instructions::hlt();
     }
 }

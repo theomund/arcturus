@@ -16,7 +16,7 @@
 
 use core::fmt::{Arguments, Result, Write};
 
-use crate::io::{inb, outb};
+use crate::cpu::instructions;
 
 enum Ports {
     COM1 = 0x3F8,
@@ -50,42 +50,42 @@ impl Write for Port {
 }
 
 impl Port {
-    fn new(port: Ports) -> Port {
+    fn new(port: Ports) -> Self {
         let address = port as u16;
 
-        outb(address + 1, 0x00);
-        outb(address + 3, 0x80);
-        outb(address, 0x03);
-        outb(address + 1, 0x00);
-        outb(address + 3, 0x03);
-        outb(address + 2, 0xC7);
-        outb(address + 4, 0x0B);
-        outb(address + 4, 0x1E);
-        outb(address, 0xAE);
+        instructions::outb(address + 1, 0x00);
+        instructions::outb(address + 3, 0x80);
+        instructions::outb(address, 0x03);
+        instructions::outb(address + 1, 0x00);
+        instructions::outb(address + 3, 0x03);
+        instructions::outb(address + 2, 0xC7);
+        instructions::outb(address + 4, 0x0B);
+        instructions::outb(address + 4, 0x1E);
+        instructions::outb(address, 0xAE);
 
-        assert_eq!(inb(address), 0xAE);
+        assert_eq!(instructions::inb(address), 0xAE);
 
-        outb(address + 4, 0x0F);
+        instructions::outb(address + 4, 0x0F);
 
-        Port { address }
+        Self { address }
     }
 
     fn received(&self) -> bool {
-        inb(self.address + 5) & 1 != 0
+        instructions::inb(self.address + 5) & 1 != 0
     }
 
     fn read(&self) -> u8 {
         while !self.received() {}
-        inb(self.address)
+        instructions::inb(self.address)
     }
 
     fn transmit_empty(&self) -> bool {
-        inb(self.address + 5) & 0x20 != 0
+        instructions::inb(self.address + 5) & 0x20 != 0
     }
 
     fn write(&self, character: char) {
         while !self.transmit_empty() {}
-        outb(self.address, character as u8);
+        instructions::outb(self.address, character as u8);
     }
 }
 

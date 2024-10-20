@@ -24,7 +24,7 @@ RUN dnf install -y \
     bash-completion-2.11 \
     edk2-ovmf-20240813 \
     gcc-14.2.1 \
-    gdb-15.1 \
+    gdb-15.2 \
     git-2.47.0 \
     limine-8.1.2 \
     make-4.4.1 \
@@ -36,5 +36,5 @@ RUN dnf copr enable -y mczernek/vale \
     && dnf clean all
 RUN useradd -m developer
 USER developer
-RUN curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh -s -- -y --default-toolchain nightly-2024-10-16 --target x86_64-unknown-none
+RUN curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh -s -- -y --default-toolchain nightly-2024-10-20 --target x86_64-unknown-none
 ENV PATH="$PATH:/home/developer/.cargo/bin"
