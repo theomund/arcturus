@@ -14,22 +14,5 @@
 # You should have received a copy of the GNU Affero General Public License
 # along with this program. If not, see <https://www.gnu.org/licenses/>.
 
-FROM quay.io/fedora/fedora:41
-RUN dnf copr enable -y mczernek/vale
-RUN dnf install -y \
-    --nogpgcheck \
-    --repofrompath 'terra,https://repos.fyralabs.com/terra41' \
-    terra-release-41 \
-    && dnf clean all
-RUN dnf install -y \ 
-    git-2.48.1 \
-    limine-8.7.0 \
-    qemu-system-x86-9.1.2 \
-    vale-3.9.3 \
-    zig-0.13.0 \
-    && dnf clean all
-WORKDIR /usr/local/bin
-RUN curl -L https://builds.zigtools.org/zls-linux-x86_64-0.13.0.tar.xz | tar -xJ zls
-RUN useradd -m developer
-USER developer
-WORKDIR /home/developer
+.zig-cache/
+zig-out/
