@@ -1,0 +1,17 @@
+---
+name: linux
+run-name: Linux Workflow
+on: [push]
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Project
+        uses: actions/checkout@v4
+      - name: Build Project
+        uses: devcontainers/ci@v0.3
+        with:
+          imageName: ghcr.io/theomund/arcturus/development
+          cacheFrom: ghcr.io/theomund/arcturus/development
+          push: always
+          runCmd: zig build
