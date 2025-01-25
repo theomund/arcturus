@@ -31,33 +31,44 @@ pub fn build(b: *std.Build) void {
     target_query.cpu_features_sub.addFeature(@intFromEnum(Feature.avx));
     target_query.cpu_features_sub.addFeature(@intFromEnum(Feature.avx2));
 
-    const kernel_main_path = b.path("src/kernel/main.zig");
-    const linker_script_path = b.path("src/kernel/linker.ld");
-    const target = b.resolveTargetQuery(target_query);
+    const target = b.standardTargetOptions(.{});
     const optimize = b.standardOptimizeOption(.{});
 
     const kernel = b.addExecutable(.{
         .name = "kernel",
-        .root_source_file = kernel_main_path,
-        .target = target,
+        .root_source_file = b.path("src/kernel/main.zig"),
+        .target = b.resolveTargetQuery(target_query),
         .optimize = optimize,
         .code_model = .kernel,
     });
 
     kernel.want_lto = false;
-    kernel.setLinkerScriptPath(linker_script_path);
+    kernel.setLinkerScriptPath(b.path("src/kernel/linker.ld"));
 
     b.installArtifact(kernel);
 
-    const zig_clean_cmd = b.addSystemCommand(&.{ "rm", "-rf", b.install_path });
+    const limine_dependency = b.dependency("limine", .{});
+
+    const limine = b.addExecutable(.{
+        .name = "limine",
+        .target = target,
+        .optimize = optimize,
+    });
+
+    limine.addCSourceFile(.{ .file = limine_dependency.path("limine.c") });
+    limine.linkLibC();
+
+    b.installArtifact(limine);
+
+    const zig_clean = b.addRemoveDirTree(b.install_path);
 
     const clean_step = b.step("clean", "Clean the project");
-    clean_step.dependOn(&zig_clean_cmd.step);
+    clean_step.dependOn(&zig_clean.step);
 
-    const zig_format_cmd = b.addSystemCommand(&.{ "zig", "fmt", "." });
+    const zig_format = b.addFmt(.{ .paths = &.{"."} });
 
     const format_step = b.step("format", "Format the source code");
-    format_step.dependOn(&zig_format_cmd.step);
+    format_step.dependOn(&zig_format.step);
 
     const vale_sync_cmd = b.addSystemCommand(&.{ "vale", "sync" });
     const vale_lint_cmd = b.addSystemCommand(&.{ "vale", "README.md" });
@@ -69,11 +80,10 @@ pub fn build(b: *std.Build) void {
     lint_step.dependOn(&vale_lint_cmd.step);
     lint_step.dependOn(&yaml_lint_cmd.step);
 
-    const kernel_root_path = b.path("src/kernel/root.zig");
-
     const unit_tests = b.addTest(.{
         .name = "test",
-        .root_source_file = kernel_root_path,
+        .root_source_file = b.path("src/main/root.zig"),
+        .target = target,
         .optimize = optimize,
     });
 
