@@ -14,7 +14,7 @@
 # You should have received a copy of the GNU Affero General Public License
 # along with this program. If not, see <https://www.gnu.org/licenses/>.
 
-FROM quay.io/fedora/fedora:41
+FROM quay.io/fedora/fedora:41@sha256:991a06b2425c13613ef8ace721a9055e52a64f65cd96c2b18c72bde43fe1308b
 RUN dnf copr enable -y mczernek/vale
 RUN dnf install -y \
     --repofrompath 'terra,https://repos.fyralabs.com/terra41' \
