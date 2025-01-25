@@ -17,8 +17,8 @@
 FROM quay.io/fedora/fedora:41
 RUN dnf copr enable -y mczernek/vale
 RUN dnf install -y \
-    --nogpgcheck \
     --repofrompath 'terra,https://repos.fyralabs.com/terra41' \
+    --setopt='terra.gpgkey=https://repos.fyralabs.com/terra41/key.asc' \
     terra-release-41 \
     && dnf clean all
 RUN dnf install -y \
