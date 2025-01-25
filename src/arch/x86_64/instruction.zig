@@ -14,16 +14,21 @@
 // You should have received a copy of the GNU Affero General Public License
 // along with this program. If not, see <https://www.gnu.org/licenses/>.
 
-const arch = @import("arch");
-const serial = @import("serial.zig");
-
-export fn _start() callconv(.C) noreturn {
-    serial.init();
-    done();
+pub fn hlt() void {
+    asm volatile ("hlt");
 }
 
-inline fn done() noreturn {
-    while (true) {
-        arch.instruction.hlt();
-    }
+pub fn inb(port: u16) u8 {
+    return asm volatile ("inb %[port], %[value]"
+        : [value] "={al}" (-> u8),
+        : [port] "N{dx}" (port),
+    );
+}
+
+pub fn outb(port: u16, value: u8) void {
+    asm volatile ("outb %[value], %[port]"
+        :
+        : [port] "{dx}" (port),
+          [value] "{al}" (value),
+    );
 }

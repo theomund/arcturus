@@ -14,16 +14,4 @@
 // You should have received a copy of the GNU Affero General Public License
 // along with this program. If not, see <https://www.gnu.org/licenses/>.
 
-const arch = @import("arch");
-const serial = @import("serial.zig");
-
-export fn _start() callconv(.C) noreturn {
-    serial.init();
-    done();
-}
-
-inline fn done() noreturn {
-    while (true) {
-        arch.instruction.hlt();
-    }
-}
+pub const instruction = @import("instruction.zig");

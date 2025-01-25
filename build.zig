@@ -98,6 +98,12 @@ fn kernel(b: *std.Build, optimize: std.builtin.OptimizeMode) *std.Build.Step.Ins
 
     executable.want_lto = false;
     executable.setLinkerScriptPath(b.path("src/kernel/linker.ld"));
+    executable.root_module.addImport(
+        "arch",
+        b.createModule(.{
+            .root_source_file = b.path("src/arch/x86_64/root.zig"),
+        }),
+    );
 
     const artifact = b.addInstallArtifact(executable, .{
         .dest_dir = .{
