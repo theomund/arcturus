@@ -17,7 +17,7 @@
 ---
 name: linux
 run-name: Linux Workflow
-on: [push]
+"on": [push]
 jobs:
   build:
     runs-on: ubuntu-latest

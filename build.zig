@@ -31,14 +31,14 @@ pub fn build(b: *std.Build) void {
     target_query.cpu_features_sub.addFeature(@intFromEnum(Feature.avx));
     target_query.cpu_features_sub.addFeature(@intFromEnum(Feature.avx2));
 
-    const root_source_path = b.path("src/kernel/main.zig");
+    const kernel_main_path = b.path("src/kernel/main.zig");
     const linker_script_path = b.path("src/kernel/linker.ld");
     const target = b.resolveTargetQuery(target_query);
     const optimize = b.standardOptimizeOption(.{});
 
     const kernel = b.addExecutable(.{
         .name = "kernel",
-        .root_source_file = root_source_path,
+        .root_source_file = kernel_main_path,
         .target = target,
         .optimize = optimize,
         .code_model = .kernel,
@@ -48,4 +48,37 @@ pub fn build(b: *std.Build) void {
     kernel.setLinkerScriptPath(linker_script_path);
 
     b.installArtifact(kernel);
+
+    const zig_clean_cmd = b.addSystemCommand(&.{ "rm", "-rf", b.install_path });
+
+    const clean_step = b.step("clean", "Clean the project");
+    clean_step.dependOn(&zig_clean_cmd.step);
+
+    const zig_format_cmd = b.addSystemCommand(&.{ "zig", "fmt", "." });
+
+    const format_step = b.step("format", "Format the source code");
+    format_step.dependOn(&zig_format_cmd.step);
+
+    const vale_sync_cmd = b.addSystemCommand(&.{ "vale", "sync" });
+    const vale_lint_cmd = b.addSystemCommand(&.{ "vale", "README.md" });
+    vale_lint_cmd.step.dependOn(&vale_sync_cmd.step);
+
+    const yaml_lint_cmd = b.addSystemCommand(&.{ "yamllint", ".github/workflows" });
+
+    const lint_step = b.step("lint", "Run the project linters");
+    lint_step.dependOn(&vale_lint_cmd.step);
+    lint_step.dependOn(&yaml_lint_cmd.step);
+
+    const kernel_root_path = b.path("src/kernel/root.zig");
+
+    const unit_tests = b.addTest(.{
+        .name = "test",
+        .root_source_file = kernel_root_path,
+        .optimize = optimize,
+    });
+
+    const run_unit_tests = b.addRunArtifact(unit_tests);
+
+    const test_step = b.step("test", "Run the unit test suite");
+    test_step.dependOn(&run_unit_tests.step);
 }

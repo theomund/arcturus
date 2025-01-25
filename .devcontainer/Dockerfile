@@ -27,6 +27,7 @@ RUN dnf install -y \
     limine-8.7.0 \
     qemu-system-x86-9.1.2 \
     vale-3.9.3 \
+    yamllint-1.35.1 \
     zig-0.13.0 \
     && dnf clean all
 WORKDIR /usr/local/bin
