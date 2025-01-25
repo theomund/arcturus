@@ -14,19 +14,15 @@
 # You should have received a copy of the GNU Affero General Public License
 # along with this program. If not, see <https://www.gnu.org/licenses/>.
 
-FROM quay.io/fedora/fedora:41
+FROM quay.io/fedora/fedora:41@sha256:991a06b2425c13613ef8ace721a9055e52a64f65cd96c2b18c72bde43fe1308b
 RUN dnf copr enable -y mczernek/vale
-RUN dnf install -y \
-    --nogpgcheck \
-    --repofrompath 'terra,https://repos.fyralabs.com/terra41' \
-    terra-release-41 \
-    && dnf clean all
 RUN dnf install -y \
     bash-completion-2.13 \
     git-2.48.1 \
-    limine-8.7.0 \
     qemu-system-x86-9.1.2 \
     vale-3.9.3 \
+    yamllint-1.35.1 \
+    xorriso-1.5.6 \
     zig-0.13.0 \
     && dnf clean all
 WORKDIR /usr/local/bin

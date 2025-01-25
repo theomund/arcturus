@@ -14,14 +14,8 @@
 // You should have received a copy of the GNU Affero General Public License
 // along with this program. If not, see <https://www.gnu.org/licenses/>.
 
-.{
-    .name = "arcturus",
-    .version = "0.1.0",
-    .dependencies = .{
-        .limine = .{
-            .url = "git+https://github.com/limine-bootloader/limine.git?ref=8.x-binary#aad3edd370955449717a334f0289dee10e2c5f01",
-            .hash = "1220412bffeb555ae2aa1a6b18b204adf3cabbcf6c94505d513d851d9884c3a4a7e0",
-        },
-    },
-    .paths = .{"."},
+const std = @import("std");
+
+test "simple" {
+    try std.testing.expect(true);
 }
