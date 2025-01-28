@@ -15,11 +15,17 @@
 // along with this program. If not, see <https://www.gnu.org/licenses/>.
 
 const arch = @import("arch");
+const std = @import("std");
+
+const Context = Port;
+const WriteError = error{};
 
 const Port = struct {
     address: u16,
 
-    pub fn init(address: u16) Port {
+    const Writer = std.io.GenericWriter(Context, WriteError, append);
+
+    fn init(address: u16) Port {
         arch.instruction.outb(address + 1, 0x00);
         arch.instruction.outb(address + 3, 0x80);
         arch.instruction.outb(address + 0, 0x03);
@@ -41,29 +47,40 @@ const Port = struct {
         };
     }
 
-    pub fn received(self: Port) bool {
+    fn received(self: Port) bool {
         return (arch.instruction.inb(self.address + 5) & 1) != 0;
     }
 
-    pub fn read(self: Port) u8 {
+    fn read(self: Port) u8 {
         while (!self.received()) {}
 
         return arch.instruction.inb(self.address);
     }
 
-    pub fn empty(self: Port) bool {
+    fn empty(self: Port) bool {
         return (arch.instruction.inb(self.address + 5) & 0x20) != 0;
     }
 
-    pub fn write(self: Port, value: u8) void {
+    fn write(self: Port, value: u8) void {
         while (!self.empty()) {}
 
         arch.instruction.outb(self.address, value);
+    }
+
+    fn append(context: Context, bytes: []const u8) WriteError!usize {
+        for (bytes) |byte| {
+            context.write(byte);
+        }
+        return bytes.len;
+    }
+
+    fn writer(self: Port) Writer {
+        return .{ .context = self };
     }
 };
 
 pub fn init() void {
     const COM1 = Port.init(0x3F8);
-    COM1.write('>');
-    COM1.write(COM1.read());
+    const writer = COM1.writer();
+    _ = try writer.write("Hello, world!");
 }
