@@ -18,11 +18,24 @@ const arch = @import("arch");
 const std = @import("std");
 
 const Context = Port;
+const ReadError = error{};
 const WriteError = error{};
+
+const Ports = enum(u16) {
+    COM1 = 0x3F8,
+    COM2 = 0x2F8,
+    COM3 = 0x3E8,
+    COM4 = 0x2E8,
+    COM5 = 0x5F8,
+    COM6 = 0x4F8,
+    COM7 = 0x5E8,
+    COM8 = 0x4E8,
+};
 
 const Port = struct {
     address: u16,
 
+    const Reader = std.io.GenericReader(Context, ReadError, parse);
     const Writer = std.io.GenericWriter(Context, WriteError, append);
 
     fn init(address: u16) Port {
@@ -69,6 +82,9 @@ const Port = struct {
 
     fn append(context: Context, bytes: []const u8) WriteError!usize {
         for (bytes) |byte| {
+            if (byte == '\n') {
+                context.write('\r');
+            }
             context.write(byte);
         }
         return bytes.len;
@@ -77,10 +93,26 @@ const Port = struct {
     fn writer(self: Port) Writer {
         return .{ .context = self };
     }
+
+    fn parse(context: Context, buffer: []u8) ReadError!usize {
+        var i: u8 = 0;
+        while (i < buffer.len) : (i += 1) {
+            buffer[i] = context.read();
+            if (buffer[i] == '\r') {
+                break;
+            }
+        }
+        return i;
+    }
+
+    fn reader(self: Port) Reader {
+        return .{ .context = self };
+    }
 };
 
-pub fn init() void {
-    const COM1 = Port.init(0x3F8);
-    const writer = COM1.writer();
-    _ = try writer.write("Hello, world!");
+pub fn init() !void {
+    const port = Port.init(@intFromEnum(Ports.COM1));
+    const writer = port.writer();
+    try writer.print("Arcturus v0.1.0 (x86_64)\n", .{});
+    try writer.print("Copyright (C) 2025 Theomund\n", .{});
 }

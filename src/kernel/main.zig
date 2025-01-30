@@ -16,9 +16,13 @@
 
 const arch = @import("arch");
 const serial = @import("serial.zig");
+const std = @import("std");
 
 export fn _start() callconv(.C) noreturn {
-    serial.init();
+    serial.init() catch |err| {
+        std.debug.panic("Failed to initialize serial port driver: {}", .{err});
+    };
+
     done();
 }
 
