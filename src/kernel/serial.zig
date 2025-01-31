@@ -21,6 +21,8 @@ const Context = Port;
 const ReadError = error{};
 const WriteError = error{};
 
+const Logger = std.log.scoped(.serial);
+
 const Ports = enum(u16) {
     COM1 = 0x3F8,
     COM2 = 0x2F8,
@@ -50,7 +52,7 @@ const Port = struct {
         arch.instruction.outb(address + 0, 0xAE);
 
         if (arch.instruction.inb(address + 0) != 0xAE) {
-            @panic("Failed to initialize serial port.");
+            std.debug.panic("Failed to initialize the serial port.", .{});
         }
 
         arch.instruction.outb(address + 4, 0x0F);
@@ -90,7 +92,7 @@ const Port = struct {
         return bytes.len;
     }
 
-    fn writer(self: Port) Writer {
+    pub fn writer(self: Port) Writer {
         return .{ .context = self };
     }
 
@@ -105,14 +107,17 @@ const Port = struct {
         return i;
     }
 
-    fn reader(self: Port) Reader {
+    pub fn reader(self: Port) Reader {
         return .{ .context = self };
     }
 };
 
+pub var COM1: Port = undefined;
+
 pub fn init() !void {
-    const port = Port.init(@intFromEnum(Ports.COM1));
-    const writer = port.writer();
+    COM1 = Port.init(@intFromEnum(Ports.COM1));
+    const writer = COM1.writer();
     try writer.print("Arcturus v0.1.0 (x86_64)\n", .{});
-    try writer.print("Copyright (C) 2025 Theomund\n", .{});
+    try writer.print("Copyright (C) 2025 Theomund\n\n", .{});
+    Logger.info("Initialized serial port driver.", .{});
 }
