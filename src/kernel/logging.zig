@@ -14,37 +14,19 @@
 // You should have received a copy of the GNU Affero General Public License
 // along with this program. If not, see <https://www.gnu.org/licenses/>.
 
-const arch = @import("arch");
-const logging = @import("logging.zig");
 const serial = @import("serial.zig");
 const std = @import("std");
 
-const Logger = std.log.scoped(.kernel);
-
-pub const std_options = std.Options{
-    .log_level = .debug,
-    .logFn = logging.log,
-};
-
-export fn _start() callconv(.C) noreturn {
-    serial.init() catch |err| {
-        std.debug.panic("Failed to initialize the serial port driver: {}", .{err});
+pub fn log(comptime level: std.log.Level, comptime scope: @Type(.EnumLiteral), comptime format: []const u8, args: anytype) void {
+    const writer = serial.COM1.writer();
+    const color = switch (level) {
+        std.log.Level.debug => std.io.tty.Color.bright_green,
+        std.log.Level.err => std.io.tty.Color.bright_red,
+        std.log.Level.info => std.io.tty.Color.bright_blue,
+        std.log.Level.warn => std.io.tty.Color.bright_yellow,
     };
-
-    Logger.info("Successfully initialized the operating system.", .{});
-
-    done();
-}
-
-pub fn panic(message: []const u8, trace: ?*std.builtin.StackTrace, address: ?usize) noreturn {
-    _ = message;
-    _ = trace;
-    _ = address;
-    done();
-}
-
-inline fn done() noreturn {
-    while (true) {
-        arch.instruction.hlt();
-    }
+    const config: std.io.tty.Config = .escape_codes;
+    std.io.tty.Config.setColor(config, writer, color) catch unreachable;
+    const message = comptime "[" ++ level.asText() ++ "] " ++ @tagName(scope) ++ ": " ++ format ++ "\n";
+    try std.fmt.format(writer, message, args);
 }
