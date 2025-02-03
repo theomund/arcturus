@@ -60,7 +60,7 @@ fn lint(b: *std.Build) void {
 fn unit(b: *std.Build, target: std.Build.ResolvedTarget, optimize: std.builtin.OptimizeMode) void {
     const unit_tests = b.addTest(.{
         .name = "unit",
-        .root_source_file = b.path("src/main/root.zig"),
+        .root_source_file = b.path("src/arch/x86_64/root.zig"),
         .target = target,
         .optimize = optimize,
     });
