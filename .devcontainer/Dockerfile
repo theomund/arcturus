@@ -20,7 +20,7 @@ RUN dnf install -y \
     bash-completion-2.13 \
     git-2.48.1 \
     qemu-system-x86-9.1.2 \
-    vale-3.9.3 \
+    vale-3.9.4 \
     xorriso-1.5.6 \
     yamllint-1.35.1 \
     zig-0.13.0 \
