@@ -16,6 +16,7 @@
 
 const instruction = @import("instruction.zig");
 const register = @import("register.zig");
+const std = @import("std");
 
 const Entry = u64;
 
@@ -51,7 +52,7 @@ pub const Pointer = packed struct {
 };
 
 pub const Table = struct {
-    entries: [5]Entry,
+    descriptors: [5]Entry,
 
     pub fn init() Table {
         const null_segment: Entry = 0;
@@ -61,7 +62,7 @@ pub const Table = struct {
         const user_data_segment: Entry = 0;
 
         return Table{
-            .entries = .{
+            .descriptors = .{
                 null_segment,
                 kernel_code_segment,
                 kernel_data_segment,
@@ -71,10 +72,14 @@ pub const Table = struct {
         };
     }
 
+    pub fn entries(self: Table) [5]Entry {
+        return self.descriptors;
+    }
+
     pub fn pointer(self: Table) Pointer {
         return Pointer{
-            .limit = (self.entries.len * @sizeOf(Entry)) - 1,
-            .base = @intFromPtr(&self.entries),
+            .limit = (self.descriptors.len * @sizeOf(Entry)) - 1,
+            .base = @intFromPtr(&self.descriptors),
         };
     }
 
@@ -89,3 +94,15 @@ pub const Table = struct {
         register.SS.set(0);
     }
 };
+
+test "Pointer Limit" {
+    const gdt = Table.init();
+    const pointer = gdt.pointer();
+    try std.testing.expectEqual(39, pointer.limit);
+}
+
+test "Null Segment" {
+    const gdt = Table.init();
+    const entries = gdt.entries();
+    try std.testing.expectEqual(0, entries[0]);
+}

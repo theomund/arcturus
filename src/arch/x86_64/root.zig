@@ -19,6 +19,6 @@ pub const instruction = @import("instruction.zig");
 pub const register = @import("register.zig");
 const std = @import("std");
 
-test "simple" {
-    try std.testing.expect(true);
+test {
+    std.testing.refAllDecls(@This());
 }
