@@ -19,6 +19,7 @@ RUN dnf copr enable -y mczernek/vale
 RUN dnf install -y \
     bash-completion-2.13 \
     git-2.48.1 \
+    lldb-19.1.7 \
     qemu-system-x86-9.1.2 \
     vale-3.9.4 \
     xorriso-1.5.6 \
