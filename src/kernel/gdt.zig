@@ -19,8 +19,10 @@ const std = @import("std");
 
 const Logger = std.log.scoped(.gdt);
 
+var gdt: arch.gdt.Table = undefined;
+
 pub fn init() void {
-    const gdt = arch.gdt.Table.init();
+    gdt = arch.gdt.Table.init();
     gdt.load();
     Logger.info("Initialized the global descriptor table.", .{});
 }

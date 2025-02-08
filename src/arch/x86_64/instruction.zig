@@ -27,7 +27,7 @@ pub fn inb(port: u16) u8 {
     );
 }
 
-pub fn lgdt(pointer: gdt.Pointer) void {
+pub fn lgdt(pointer: *const gdt.Pointer) void {
     asm volatile ("lgdt (%[pointer])"
         :
         : [pointer] "r" (pointer),

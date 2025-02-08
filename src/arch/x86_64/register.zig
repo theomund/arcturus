@@ -22,7 +22,13 @@ pub const CS = struct {
     }
 
     pub fn set(value: u16) void {
-        asm volatile ("mov %[value], %%cs"
+        asm volatile (
+            \\ push %[value]
+            \\ lea 1f(%rip), %rax
+            \\ push %rax
+            \\ lretq
+            \\
+            \\ 1:
             :
             : [value] "r" (value),
         );
