@@ -14,8 +14,15 @@
 // You should have received a copy of the GNU Affero General Public License
 // along with this program. If not, see <https://www.gnu.org/licenses/>.
 
+const arch = @import("arch");
 const std = @import("std");
 
-test "simple" {
-    try std.testing.expect(true);
+const Logger = std.log.scoped(.gdt);
+
+var gdt: arch.gdt.Table = undefined;
+
+pub fn init() void {
+    gdt = arch.gdt.Table.init();
+    gdt.load();
+    Logger.info("Initialized the global descriptor table.", .{});
 }

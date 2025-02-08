@@ -14,6 +14,8 @@
 // You should have received a copy of the GNU Affero General Public License
 // along with this program. If not, see <https://www.gnu.org/licenses/>.
 
+const gdt = @import("gdt.zig");
+
 pub fn hlt() void {
     asm volatile ("hlt");
 }
@@ -22,6 +24,13 @@ pub fn inb(port: u16) u8 {
     return asm volatile ("inb %[port], %[value]"
         : [value] "={al}" (-> u8),
         : [port] "N{dx}" (port),
+    );
+}
+
+pub fn lgdt(pointer: *const gdt.Pointer) void {
+    asm volatile ("lgdt (%[pointer])"
+        :
+        : [pointer] "r" (pointer),
     );
 }
 

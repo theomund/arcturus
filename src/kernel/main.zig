@@ -15,6 +15,7 @@
 // along with this program. If not, see <https://www.gnu.org/licenses/>.
 
 const arch = @import("arch");
+const gdt = @import("gdt.zig");
 const logging = @import("logging.zig");
 const serial = @import("serial.zig");
 const std = @import("std");
@@ -30,6 +31,8 @@ export fn _start() callconv(.C) noreturn {
     serial.init() catch |err| {
         std.debug.panic("Failed to initialize the serial port driver: {}", .{err});
     };
+
+    gdt.init();
 
     Logger.info("Successfully initialized the operating system.", .{});
 

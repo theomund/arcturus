@@ -17,6 +17,7 @@
 const std = @import("std");
 
 pub fn build(b: *std.Build) void {
+    const debug = b.option(bool, "debug", "Activates QEMU debugging support") orelse false;
     const target = b.standardTargetOptions(.{});
     const optimize = b.standardOptimizeOption(.{});
 
@@ -27,8 +28,8 @@ pub fn build(b: *std.Build) void {
     const kernel_artifact = kernel(b, optimize);
     const limine_artifact = limine(b, target, optimize);
     const iso_artifact = iso(b, kernel_artifact, limine_artifact);
-    bios(b, iso_artifact);
-    uefi(b, iso_artifact);
+    bios(b, iso_artifact, debug);
+    uefi(b, iso_artifact, debug);
 }
 
 fn clean(b: *std.Build) void {
@@ -60,7 +61,7 @@ fn lint(b: *std.Build) void {
 fn unit(b: *std.Build, target: std.Build.ResolvedTarget, optimize: std.builtin.OptimizeMode) void {
     const unit_tests = b.addTest(.{
         .name = "unit",
-        .root_source_file = b.path("src/main/root.zig"),
+        .root_source_file = b.path("src/arch/x86_64/root.zig"),
         .target = target,
         .optimize = optimize,
     });
@@ -192,7 +193,7 @@ fn iso(b: *std.Build, kernel_artifact: *std.Build.Step.InstallArtifact, limine_a
     return artifact;
 }
 
-fn bios(b: *std.Build, iso_artifact: *std.Build.Step.InstallFile) void {
+fn bios(b: *std.Build, iso_artifact: *std.Build.Step.InstallFile, debug: bool) void {
     const qemu = b.addSystemCommand(&.{
         "qemu-system-x86_64",
         "-M",
@@ -202,13 +203,17 @@ fn bios(b: *std.Build, iso_artifact: *std.Build.Step.InstallFile) void {
         "-cdrom",
     });
     qemu.addFileArg(b.path("zig-out/bin/arcturus.iso"));
+    if (debug) {
+        qemu.addArg("-s");
+        qemu.addArg("-S");
+    }
     qemu.step.dependOn(&iso_artifact.step);
 
     const bios_step = b.step("bios", "Create a BIOS virtual machine");
     bios_step.dependOn(&qemu.step);
 }
 
-fn uefi(b: *std.Build, iso_artifact: *std.Build.Step.InstallFile) void {
+fn uefi(b: *std.Build, iso_artifact: *std.Build.Step.InstallFile, debug: bool) void {
     const qemu = b.addSystemCommand(&.{
         "qemu-system-x86_64",
         "-M",
@@ -218,6 +223,10 @@ fn uefi(b: *std.Build, iso_artifact: *std.Build.Step.InstallFile) void {
         "-cdrom",
     });
     qemu.addFileArg(b.path("zig-out/bin/arcturus.iso"));
+    if (debug) {
+        qemu.addArg("-s");
+        qemu.addArg("-S");
+    }
     qemu.step.dependOn(&iso_artifact.step);
 
     const uefi_step = b.step("uefi", "Create a UEFI virtual machine");
