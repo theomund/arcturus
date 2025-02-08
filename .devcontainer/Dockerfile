@@ -14,7 +14,7 @@
 # You should have received a copy of the GNU Affero General Public License
 # along with this program. If not, see <https://www.gnu.org/licenses/>.
 
-FROM quay.io/fedora/fedora:41@sha256:cc3a53864ea887c898daf6ea8757fe2536fcecfbde751bfb6c812b440f756326
+FROM quay.io/fedora/fedora:41@sha256:d86454521e81cc5a222c7bf2f1910e912c268729739948a605a7c8af18e83c6b
 RUN dnf copr enable -y mczernek/vale
 RUN dnf install -y \
     bash-completion-2.13 \
