@@ -16,96 +16,96 @@
 
 pub const CS = struct {
     pub fn get() u16 {
-        return asm volatile ("mov %%cs, %[value]"
-            : [value] "=r" (-> u16),
+        return asm volatile ("mov %%cs, %[selector]"
+            : [selector] "=r" (-> u16),
         );
     }
 
-    pub fn set(value: u16) void {
+    pub fn set(selector: u64) void {
         asm volatile (
-            \\ push %[value]
-            \\ lea 1f(%rip), %rax
-            \\ push %rax
+            \\ pushq %[selector]
+            \\ lea 1f(%%rip), %%rax
+            \\ pushq %%rax
             \\ lretq
             \\
             \\ 1:
             :
-            : [value] "r" (value),
+            : [selector] "r" (selector),
         );
     }
 };
 
 pub const DS = struct {
     pub fn get() u16 {
-        return asm volatile ("mov %%ds, %[value]"
-            : [value] "=r" (-> u16),
+        return asm volatile ("mov %%ds, %[selector]"
+            : [selector] "=r" (-> u16),
         );
     }
 
-    pub fn set(value: u16) void {
-        asm volatile ("mov %[value], %%ds"
+    pub fn set(selector: u16) void {
+        asm volatile ("mov %[selector], %%ds"
             :
-            : [value] "r" (value),
+            : [selector] "r" (selector),
         );
     }
 };
 
 pub const ES = struct {
     pub fn get() u16 {
-        return asm volatile ("mov %%es, %[value]"
-            : [value] "=r" (-> u16),
+        return asm volatile ("mov %%es, %[selector]"
+            : [selector] "=r" (-> u16),
         );
     }
 
-    pub fn set(value: u16) void {
-        asm volatile ("mov %[value], %%es"
+    pub fn set(selector: u16) void {
+        asm volatile ("mov %[selector], %%es"
             :
-            : [value] "r" (value),
+            : [selector] "r" (selector),
         );
     }
 };
 
 pub const FS = struct {
     pub fn get() u16 {
-        return asm volatile ("mov %%fs, %[value]"
-            : [value] "=r" (-> u16),
+        return asm volatile ("mov %%fs, %[selector]"
+            : [selector] "=r" (-> u16),
         );
     }
 
-    pub fn set(value: u16) void {
-        asm volatile ("mov %[value], %%fs"
+    pub fn set(selector: u16) void {
+        asm volatile ("mov %[selector], %%fs"
             :
-            : [value] "r" (value),
+            : [selector] "r" (selector),
         );
     }
 };
 
 pub const GS = struct {
     pub fn get() u16 {
-        return asm volatile ("mov %%gs, %[value]"
-            : [value] "=r" (-> u16),
+        return asm volatile ("mov %%gs, %[selector]"
+            : [selector] "=r" (-> u16),
         );
     }
 
-    pub fn set(value: u16) void {
-        asm volatile ("mov %[value], %%gs"
+    pub fn set(selector: u16) void {
+        asm volatile ("mov %[selector], %%gs"
             :
-            : [value] "r" (value),
+            : [selector] "r" (selector),
         );
     }
 };
 
 pub const SS = struct {
     pub fn get() u16 {
-        return asm volatile ("mov %%ss, %[value]"
-            : [value] "=r" (-> u16),
+        return asm volatile ("mov %%ss, %[selector]"
+            : [selector] "=r" (-> u16),
         );
     }
 
-    pub fn set(value: u16) void {
-        asm volatile ("mov %[value], %%ss"
+    pub fn set(selector: u16) void {
+        asm volatile ("mov %[selector], %%ss"
             :
-            : [value] "r" (value),
+            : [selector] "r" (selector),
         );
     }
 };
