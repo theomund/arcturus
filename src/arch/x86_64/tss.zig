@@ -15,6 +15,7 @@
 // along with this program. If not, see <https://www.gnu.org/licenses/>.
 
 const instruction = @import("instruction.zig");
+const std = @import("std");
 
 const TaskStateSegment = packed struct {
     reserved_low: u32,
@@ -39,3 +40,8 @@ const TaskStateSegment = packed struct {
         instruction.ltr(selector);
     }
 };
+
+test "I/O Map Base" {
+    const tss = TaskStateSegment.init();
+    try std.testing.expectEqual(0x68, tss.io_map_base);
+}
