@@ -14,37 +14,28 @@
 // You should have received a copy of the GNU Affero General Public License
 // along with this program. If not, see <https://www.gnu.org/licenses/>.
 
-const gdt = @import("gdt.zig");
+const arch = @import("arch");
 
-pub fn hlt() void {
-    asm volatile ("hlt");
-}
+const TaskStateSegment = packed struct {
+    reserved_low: u32,
+    privilege_stack_table: 3[u64],
+    reserved_middle: u64,
+    interrupt_stack_table: 7[u64],
+    reserved_high: u80,
+    io_map_base: u16,
 
-pub fn inb(port: u16) u8 {
-    return asm volatile ("inb %[port], %[value]"
-        : [value] "={al}" (-> u8),
-        : [port] "N{dx}" (port),
-    );
-}
+    pub fn init() TaskStateSegment {
+        return TaskStateSegment{
+            .reserved_low = 0,
+            .privilege_stack_table = [_]u8{0} ** 3,
+            .reserved_middle = 0,
+            .interrupt_stack_table = [_]u8{0} ** 7,
+            .reserved_high = 0,
+            .io_map_base = @sizeOf(TaskStateSegment),
+        };
+    }
 
-pub fn lgdt(pointer: *const gdt.Pointer) void {
-    asm volatile ("lgdt (%[pointer])"
-        :
-        : [pointer] "r" (pointer),
-    );
-}
-
-pub fn ltr(selector: u16) void {
-    asm volatile ("ltr %[selector]"
-        :
-        : [selector] "r" (selector),
-    );
-}
-
-pub fn outb(port: u16, value: u8) void {
-    asm volatile ("outb %[value], %[port]"
-        :
-        : [port] "{dx}" (port),
-          [value] "{al}" (value),
-    );
-}
+    pub fn load(selector: u16) void {
+        arch.instruction.ltr(selector);
+    }
+};
