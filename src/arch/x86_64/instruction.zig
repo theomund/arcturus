@@ -16,6 +16,10 @@
 
 const gdt = @import("gdt.zig");
 
+pub fn cli() void {
+    asm volatile ("cli");
+}
+
 pub fn hlt() void {
     asm volatile ("hlt");
 }
@@ -47,4 +51,8 @@ pub fn outb(port: u16, value: u8) void {
         : [port] "{dx}" (port),
           [value] "{al}" (value),
     );
+}
+
+pub fn sti() void {
+    asm volatile ("sti");
 }

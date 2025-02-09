@@ -18,7 +18,7 @@ const serial = @import("serial.zig");
 const std = @import("std");
 
 pub fn log(comptime level: std.log.Level, comptime scope: @Type(.EnumLiteral), comptime format: []const u8, args: anytype) void {
-    const writer = serial.COM1.writer();
+    const writer = serial.port.writer();
     const color = switch (level) {
         std.log.Level.debug => std.io.tty.Color.bright_green,
         std.log.Level.err => std.io.tty.Color.bright_red,

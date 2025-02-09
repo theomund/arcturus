@@ -18,6 +18,7 @@ pub const gdt = @import("gdt.zig");
 pub const instruction = @import("instruction.zig");
 pub const register = @import("register.zig");
 const std = @import("std");
+pub const tss = @import("tss.zig");
 
 test {
     std.testing.refAllDecls(@This());

@@ -15,16 +15,15 @@
 // along with this program. If not, see <https://www.gnu.org/licenses/>.
 
 const arch = @import("arch");
+const gdt = @import("gdt.zig");
 const std = @import("std");
-const tss = @import("tss.zig");
 
-const Logger = std.log.scoped(.gdt);
+const Logger = std.log.scoped(.tss);
 
-pub var table: arch.gdt.Table = undefined;
+pub var segment: arch.tss.Segment = undefined;
 
 pub fn init() void {
-    tss.segment = arch.tss.Segment.init();
-    table = arch.gdt.Table.init(&tss.segment);
-    table.load();
-    Logger.info("Initialized the global descriptor table.", .{});
+    const selector = gdt.table.selectors[5];
+    arch.tss.load(selector);
+    Logger.info("Initialized the task state segment.", .{});
 }

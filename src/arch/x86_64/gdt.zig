@@ -17,6 +17,7 @@
 const instruction = @import("instruction.zig");
 const register = @import("register.zig");
 const std = @import("std");
+const tss = @import("tss.zig");
 
 const Access = packed struct {
     accessed: u1,
@@ -28,7 +29,7 @@ const Access = packed struct {
     present: u1,
 };
 
-const Flags = packed struct {
+pub const Flags = packed struct {
     reserved: u1,
     long_mode: u1,
     size: u1,
@@ -56,10 +57,10 @@ const Selector = packed struct {
 };
 
 pub const Table = struct {
-    descriptors: [5]u64,
-    selectors: [5]u16,
+    descriptors: [7]u64,
+    selectors: [6]u16,
 
-    pub fn init() Table {
+    pub fn init(task_state_segment: *const tss.Segment) Table {
         const null_descriptor = Descriptor{
             .limit_low = 0x0,
             .base_low = 0x0,
@@ -200,6 +201,41 @@ pub const Table = struct {
             .index = 4,
         };
 
+        const task_state_base = @intFromPtr(task_state_segment);
+
+        const task_state_limit = @sizeOf(tss.Segment) - 1;
+
+        const task_state_descriptor = tss.Descriptor{
+            .low = .{
+                .limit_low = @truncate(task_state_limit),
+                .base_low = @truncate(task_state_base),
+                .access = .{
+                    .segment_type = 0x9,
+                    .descriptor_type = 0,
+                    .descriptor_privilege = 0,
+                    .present = 1,
+                },
+                .limit_high = @truncate(task_state_limit >> 16),
+                .flags = .{
+                    .reserved = 0,
+                    .long_mode = 0,
+                    .size = 0,
+                    .granularity = 0,
+                },
+                .base_middle = @truncate(task_state_base >> 24),
+            },
+            .high = .{
+                .base_high = @truncate(task_state_base >> 32),
+                .reserved = 0,
+            },
+        };
+
+        const task_state_selector = Selector{
+            .requested_privilege_level = 0,
+            .table_indicator = 0,
+            .index = 5,
+        };
+
         return Table{
             .descriptors = .{
                 @bitCast(null_descriptor),
@@ -207,6 +243,8 @@ pub const Table = struct {
                 @bitCast(kernel_data_descriptor),
                 @bitCast(user_code_descriptor),
                 @bitCast(user_data_descriptor),
+                @bitCast(task_state_descriptor.low),
+                @bitCast(task_state_descriptor.high),
             },
             .selectors = .{
                 @bitCast(null_selector),
@@ -214,14 +252,8 @@ pub const Table = struct {
                 @bitCast(kernel_data_selector),
                 @bitCast(user_code_selector),
                 @bitCast(user_data_selector),
+                @bitCast(task_state_selector),
             },
-        };
-    }
-
-    pub fn entries(self: Table) struct { descriptors: [5]u64, selectors: [5]u16 } {
-        return .{
-            .descriptors = self.descriptors,
-            .selectors = self.selectors,
         };
     }
 
@@ -245,67 +277,74 @@ pub const Table = struct {
 };
 
 test "Pointer Limit" {
-    const gdt = Table.init();
-    const pointer = gdt.pointer();
-    try std.testing.expectEqual(39, pointer.limit);
+    const segment = tss.Segment.init();
+    const table = Table.init(&segment);
+    const pointer = table.pointer();
+    try std.testing.expectEqual(0x37, pointer.limit);
 }
 
 test "Null Segment Descriptor" {
-    const gdt = Table.init();
-    const entries = gdt.entries();
-    try std.testing.expectEqual(0x0, entries.descriptors[0]);
+    const segment = tss.Segment.init();
+    const table = Table.init(&segment);
+    try std.testing.expectEqual(0x0, table.descriptors[0]);
 }
 
 test "Null Segment Selector" {
-    const gdt = Table.init();
-    const entries = gdt.entries();
-    try std.testing.expectEqual(0x0, entries.selectors[0]);
+    const segment = tss.Segment.init();
+    const table = Table.init(&segment);
+    try std.testing.expectEqual(0x0, table.selectors[0]);
 }
 
 test "Kernel Code Segment Descriptor" {
-    const gdt = Table.init();
-    const entries = gdt.entries();
-    try std.testing.expectEqual(0x00AF9A000000FFFF, entries.descriptors[1]);
+    const segment = tss.Segment.init();
+    const table = Table.init(&segment);
+    try std.testing.expectEqual(0x00AF9A000000FFFF, table.descriptors[1]);
 }
 
 test "Kernel Code Segment Selector" {
-    const gdt = Table.init();
-    const entries = gdt.entries();
-    try std.testing.expectEqual(0x8, entries.selectors[1]);
+    const segment = tss.Segment.init();
+    const table = Table.init(&segment);
+    try std.testing.expectEqual(0x8, table.selectors[1]);
 }
 
 test "Kernel Data Segment Descriptor" {
-    const gdt = Table.init();
-    const entries = gdt.entries();
-    try std.testing.expectEqual(0x00CF92000000FFFF, entries.descriptors[2]);
+    const segment = tss.Segment.init();
+    const table = Table.init(&segment);
+    try std.testing.expectEqual(0x00CF92000000FFFF, table.descriptors[2]);
 }
 
 test "Kernel Data Segment Selector" {
-    const gdt = Table.init();
-    const entries = gdt.entries();
-    try std.testing.expectEqual(0x10, entries.selectors[2]);
+    const segment = tss.Segment.init();
+    const table = Table.init(&segment);
+    try std.testing.expectEqual(0x10, table.selectors[2]);
 }
 
 test "User Code Segment Descriptor" {
-    const gdt = Table.init();
-    const entries = gdt.entries();
-    try std.testing.expectEqual(0x00AFFA000000FFFF, entries.descriptors[3]);
+    const segment = tss.Segment.init();
+    const table = Table.init(&segment);
+    try std.testing.expectEqual(0x00AFFA000000FFFF, table.descriptors[3]);
 }
 
 test "User Code Segment Selector" {
-    const gdt = Table.init();
-    const entries = gdt.entries();
-    try std.testing.expectEqual(0x1B, entries.selectors[3]);
+    const segment = tss.Segment.init();
+    const table = Table.init(&segment);
+    try std.testing.expectEqual(0x1B, table.selectors[3]);
 }
 
 test "User Data Segment Descriptor" {
-    const gdt = Table.init();
-    const entries = gdt.entries();
-    try std.testing.expectEqual(0x00CFF2000000FFFF, entries.descriptors[4]);
+    const segment = tss.Segment.init();
+    const table = Table.init(&segment);
+    try std.testing.expectEqual(0x00CFF2000000FFFF, table.descriptors[4]);
 }
 
 test "User Data Segment Selector" {
-    const gdt = Table.init();
-    const entries = gdt.entries();
-    try std.testing.expectEqual(0x23, entries.selectors[4]);
+    const segment = tss.Segment.init();
+    const table = Table.init(&segment);
+    try std.testing.expectEqual(0x23, table.selectors[4]);
+}
+
+test "Task State Segment Selector" {
+    const segment = tss.Segment.init();
+    const table = Table.init(&segment);
+    try std.testing.expectEqual(0x28, table.selectors[5]);
 }

@@ -19,6 +19,7 @@ const gdt = @import("gdt.zig");
 const logging = @import("logging.zig");
 const serial = @import("serial.zig");
 const std = @import("std");
+const tss = @import("tss.zig");
 
 const Logger = std.log.scoped(.kernel);
 
@@ -34,6 +35,8 @@ export fn _start() callconv(.C) noreturn {
 
     gdt.init();
 
+    tss.init();
+
     Logger.info("Successfully initialized the operating system.", .{});
 
     done();
@@ -47,6 +50,7 @@ pub fn panic(message: []const u8, trace: ?*std.builtin.StackTrace, address: ?usi
 }
 
 inline fn done() noreturn {
+    arch.instruction.cli();
     while (true) {
         arch.instruction.hlt();
     }
