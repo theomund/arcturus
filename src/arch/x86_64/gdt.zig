@@ -35,7 +35,7 @@ const Flags = packed struct {
     granularity: u1,
 };
 
-const Segment = packed struct {
+const Descriptor = packed struct {
     limit_low: u16,
     base_low: u24,
     access: Access,
@@ -60,7 +60,7 @@ pub const Table = struct {
     selectors: [5]u16,
 
     pub fn init() Table {
-        const null_descriptor = Segment{
+        const null_descriptor = Descriptor{
             .limit_low = 0x0,
             .base_low = 0x0,
             .access = .{
@@ -88,7 +88,7 @@ pub const Table = struct {
             .index = 0,
         };
 
-        const kernel_code_descriptor = Segment{
+        const kernel_code_descriptor = Descriptor{
             .limit_low = 0xFFFF,
             .base_low = 0x0,
             .access = .{
@@ -116,7 +116,7 @@ pub const Table = struct {
             .index = 1,
         };
 
-        const kernel_data_descriptor = Segment{
+        const kernel_data_descriptor = Descriptor{
             .limit_low = 0xFFFF,
             .base_low = 0x0,
             .access = .{
@@ -144,7 +144,7 @@ pub const Table = struct {
             .index = 2,
         };
 
-        const user_code_descriptor = Segment{
+        const user_code_descriptor = Descriptor{
             .limit_low = 0xFFFF,
             .base_low = 0x0,
             .access = .{
@@ -172,7 +172,7 @@ pub const Table = struct {
             .index = 3,
         };
 
-        const user_data_descriptor = Segment{
+        const user_data_descriptor = Descriptor{
             .limit_low = 0xFFFF,
             .base_low = 0x0,
             .access = .{
