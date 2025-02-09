@@ -14,7 +14,7 @@
 // You should have received a copy of the GNU Affero General Public License
 // along with this program. If not, see <https://www.gnu.org/licenses/>.
 
-const arch = @import("arch");
+const instruction = @import("instruction.zig");
 
 const TaskStateSegment = packed struct {
     reserved_low: u32,
@@ -36,6 +36,6 @@ const TaskStateSegment = packed struct {
     }
 
     pub fn load(selector: u16) void {
-        arch.instruction.ltr(selector);
+        instruction.ltr(selector);
     }
 };
