@@ -266,6 +266,7 @@ pub const Table = struct {
 
     pub fn load(self: Table) void {
         const ptr = self.pointer();
+        instruction.cli();
         instruction.lgdt(&ptr);
         register.CS.set(self.selectors[1]);
         register.DS.set(self.selectors[2]);
