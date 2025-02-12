@@ -45,9 +45,9 @@ const Descriptor = packed struct {
     base_high: u8,
 };
 
-pub const Pointer = packed struct {
-    limit: u16,
-    base: u64,
+pub const Pointer = extern struct {
+    limit: u16 align(1),
+    base: u64 align(1),
 };
 
 const Selector = packed struct {
