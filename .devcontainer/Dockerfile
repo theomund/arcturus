@@ -14,14 +14,14 @@
 # You should have received a copy of the GNU Affero General Public License
 # along with this program. If not, see <https://www.gnu.org/licenses/>.
 
-FROM quay.io/fedora/fedora:41@sha256:d86454521e81cc5a222c7bf2f1910e912c268729739948a605a7c8af18e83c6b
+FROM quay.io/fedora/fedora:41
 RUN dnf copr enable -y mczernek/vale
 RUN dnf install -y \
     bash-completion-2.13 \
     git-2.48.1 \
     lldb-19.1.7 \
     qemu-system-x86-9.1.2 \
-    vale-3.9.4 \
+    vale-3.9.5 \
     xorriso-1.5.6 \
     yamllint-1.35.1 \
     zig-0.13.0 \

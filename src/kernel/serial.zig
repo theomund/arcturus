@@ -112,11 +112,11 @@ const Port = struct {
     }
 };
 
-pub var COM1: Port = undefined;
+pub var port: Port = undefined;
 
 pub fn init() !void {
-    COM1 = Port.init(@intFromEnum(Ports.COM1));
-    const writer = COM1.writer();
+    port = Port.init(@intFromEnum(Ports.COM1));
+    const writer = port.writer();
     try writer.print("Arcturus v0.1.0 (x86_64)\n", .{});
     try writer.print("Copyright (C) 2025 Theomund\n\n", .{});
     Logger.info("Initialized serial port driver.", .{});

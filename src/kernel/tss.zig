@@ -14,12 +14,16 @@
 // You should have received a copy of the GNU Affero General Public License
 // along with this program. If not, see <https://www.gnu.org/licenses/>.
 
-pub const gdt = @import("gdt.zig");
-pub const instruction = @import("instruction.zig");
-pub const register = @import("register.zig");
+const arch = @import("arch");
+const gdt = @import("gdt.zig");
 const std = @import("std");
-pub const tss = @import("tss.zig");
 
-test {
-    std.testing.refAllDecls(@This());
+const Logger = std.log.scoped(.tss);
+
+pub const segment = arch.tss.Segment.init();
+
+pub fn init() void {
+    const selector = gdt.table.selectors[5];
+    arch.tss.load(selector);
+    Logger.info("Initialized the task state segment.", .{});
 }

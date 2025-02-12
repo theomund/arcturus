@@ -16,13 +16,14 @@
 
 const arch = @import("arch");
 const std = @import("std");
+const tss = @import("tss.zig");
 
 const Logger = std.log.scoped(.gdt);
 
-var gdt: arch.gdt.Table = undefined;
+pub var table: arch.gdt.Table = undefined;
 
 pub fn init() void {
-    gdt = arch.gdt.Table.init();
-    gdt.load();
+    table = arch.gdt.Table.init(&tss.segment);
+    table.load();
     Logger.info("Initialized the global descriptor table.", .{});
 }
