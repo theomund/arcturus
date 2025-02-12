@@ -21,7 +21,7 @@ RUN dnf install -y \
     git-2.48.1 \
     lldb-19.1.7 \
     qemu-system-x86-9.1.2 \
-    vale-3.9.4 \
+    vale-3.9.5 \
     xorriso-1.5.6 \
     yamllint-1.35.1 \
     zig-0.13.0 \
