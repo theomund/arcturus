@@ -44,37 +44,23 @@ pub const Descriptor = struct {
     high: High,
 };
 
-pub const Segment = packed struct {
-    reserved_low: u32,
-    rsp_0: u64,
-    rsp_1: u64,
-    rsp_2: u64,
-    reserved_middle: u64,
-    ist_1: u64,
-    ist_2: u64,
-    ist_3: u64,
-    ist_4: u64,
-    ist_5: u64,
-    ist_6: u64,
-    ist_7: u64,
-    reserved_high: u80,
-    io_map_base: u16,
+pub const Segment = extern struct {
+    reserved_1: u32 align(1),
+    privilege_stack_table: [3]u64 align(1),
+    reserved_2: u64 align(1),
+    interrupt_stack_table: [7]u64 align(1),
+    reserved_3: u64 align(1),
+    reserved_4: u16 align(1),
+    io_map_base: u16 align(1),
 
     pub fn init() Segment {
         return Segment{
-            .reserved_low = 0,
-            .rsp_0 = 0,
-            .rsp_1 = 0,
-            .rsp_2 = 0,
-            .reserved_middle = 0,
-            .ist_1 = 0,
-            .ist_2 = 0,
-            .ist_3 = 0,
-            .ist_4 = 0,
-            .ist_5 = 0,
-            .ist_6 = 0,
-            .ist_7 = 0,
-            .reserved_high = 0,
+            .reserved_1 = 0,
+            .privilege_stack_table = [_]u64{0} ** 3,
+            .reserved_2 = 0,
+            .interrupt_stack_table = [_]u64{0} ** 7,
+            .reserved_3 = 0,
+            .reserved_4 = 0,
             .io_map_base = @sizeOf(Segment),
         };
     }
