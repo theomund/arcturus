@@ -23,7 +23,6 @@ const Logger = std.log.scoped(.gdt);
 pub var table: arch.gdt.Table = undefined;
 
 pub fn init() void {
-    tss.segment = arch.tss.Segment.init();
     table = arch.gdt.Table.init(&tss.segment);
     table.load();
     Logger.info("Initialized the global descriptor table.", .{});

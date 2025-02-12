@@ -20,7 +20,7 @@ const std = @import("std");
 
 const Logger = std.log.scoped(.tss);
 
-pub var segment: arch.tss.Segment = undefined;
+pub const segment = arch.tss.Segment.init();
 
 pub fn init() void {
     const selector = gdt.table.selectors[5];
