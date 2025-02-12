@@ -31,6 +31,10 @@ pub fn inb(port: u16) u8 {
     );
 }
 
+pub fn int3() void {
+    asm volatile ("int3");
+}
+
 pub fn lgdt(pointer: *const gdt.Pointer) void {
     asm volatile ("lgdt (%[pointer])"
         :
