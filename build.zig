@@ -200,15 +200,15 @@ fn bios(b: *std.Build, iso_artifact: *std.Build.Step.InstallFile, debug: bool) v
         "q35",
         "-boot",
         "d",
-        "-d",
-        "int",
-        "-no-reboot",
         "-cdrom",
     });
     qemu.addFileArg(b.path("zig-out/bin/arcturus.iso"));
     if (debug) {
         qemu.addArg("-s");
         qemu.addArg("-S");
+        qemu.addArg("-d");
+        qemu.addArg("int");
+        qemu.addArg("-no-reboot");
     }
     qemu.step.dependOn(&iso_artifact.step);
 
@@ -229,6 +229,9 @@ fn uefi(b: *std.Build, iso_artifact: *std.Build.Step.InstallFile, debug: bool) v
     if (debug) {
         qemu.addArg("-s");
         qemu.addArg("-S");
+        qemu.addArg("-d");
+        qemu.addArg("int");
+        qemu.addArg("-no-reboot");
     }
     qemu.step.dependOn(&iso_artifact.step);
 
