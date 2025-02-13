@@ -16,45 +16,15 @@
 
 const arch = @import("arch");
 const gdt = @import("gdt.zig");
-const idt = @import("idt.zig");
-const logging = @import("logging.zig");
-const serial = @import("serial.zig");
 const std = @import("std");
-const tss = @import("tss.zig");
 
-const Logger = std.log.scoped(.kernel);
+const Logger = std.log.scoped(.idt);
 
-pub const std_options = std.Options{
-    .log_level = .debug,
-    .logFn = logging.log,
-};
+pub var table: arch.idt.Table = undefined;
 
-export fn _start() callconv(.C) noreturn {
-    serial.init() catch |err| {
-        std.debug.panic("Failed to initialize the serial port driver: {}", .{err});
-    };
-
-    gdt.init();
-
-    tss.init();
-
-    idt.init();
-
-    Logger.info("Successfully initialized the operating system.", .{});
-
-    done();
-}
-
-pub fn panic(message: []const u8, trace: ?*std.builtin.StackTrace, address: ?usize) noreturn {
-    _ = message;
-    _ = trace;
-    _ = address;
-    done();
-}
-
-inline fn done() noreturn {
-    arch.instruction.cli();
-    while (true) {
-        arch.instruction.hlt();
-    }
+pub fn init() void {
+    const selector = gdt.table.selectors[1];
+    table = arch.idt.Table.init(selector);
+    table.load();
+    Logger.info("Initialized the interrupt descriptor table.", .{});
 }

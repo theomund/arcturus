@@ -119,5 +119,5 @@ pub fn init() !void {
     const writer = port.writer();
     try writer.print("Arcturus v0.1.0 (x86_64)\n", .{});
     try writer.print("Copyright (C) 2025 Theomund\n\n", .{});
-    Logger.info("Initialized serial port driver.", .{});
+    Logger.info("Initialized the serial port driver.", .{});
 }

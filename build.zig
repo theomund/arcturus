@@ -200,6 +200,9 @@ fn bios(b: *std.Build, iso_artifact: *std.Build.Step.InstallFile, debug: bool) v
         "q35",
         "-boot",
         "d",
+        "-d",
+        "int",
+        "-no-reboot",
         "-cdrom",
     });
     qemu.addFileArg(b.path("zig-out/bin/arcturus.iso"));
