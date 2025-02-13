@@ -16,6 +16,6 @@
 
 const instruction = @import("instruction.zig");
 
-pub export fn breakpoint_exception() callconv(.Interrupt) void {
+pub export fn breakpointHandler() callconv(.Interrupt) void {
     instruction.nop();
 }

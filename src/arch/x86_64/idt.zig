@@ -53,7 +53,7 @@ pub const Table = struct {
             .reserved_3 = 0,
         };
 
-        const breakpoint_offset = @intFromPtr(&isr.breakpoint_exception);
+        const breakpoint_offset = @intFromPtr(&isr.breakpointHandler);
 
         const breakpoint_descriptor = Descriptor{
             .offset_1 = @truncate(breakpoint_offset),
