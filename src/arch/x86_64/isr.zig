@@ -14,13 +14,8 @@
 // You should have received a copy of the GNU Affero General Public License
 // along with this program. If not, see <https://www.gnu.org/licenses/>.
 
-pub const gdt = @import("gdt.zig");
-pub const idt = @import("idt.zig");
-pub const instruction = @import("instruction.zig");
-pub const register = @import("register.zig");
-const std = @import("std");
-pub const tss = @import("tss.zig");
+const instruction = @import("instruction.zig");
 
-test {
-    std.testing.refAllDecls(@This());
+pub export fn breakpointHandler() callconv(.Interrupt) void {
+    instruction.nop();
 }

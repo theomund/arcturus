@@ -206,6 +206,9 @@ fn bios(b: *std.Build, iso_artifact: *std.Build.Step.InstallFile, debug: bool) v
     if (debug) {
         qemu.addArg("-s");
         qemu.addArg("-S");
+        qemu.addArg("-d");
+        qemu.addArg("int");
+        qemu.addArg("-no-reboot");
     }
     qemu.step.dependOn(&iso_artifact.step);
 
@@ -226,6 +229,9 @@ fn uefi(b: *std.Build, iso_artifact: *std.Build.Step.InstallFile, debug: bool) v
     if (debug) {
         qemu.addArg("-s");
         qemu.addArg("-S");
+        qemu.addArg("-d");
+        qemu.addArg("int");
+        qemu.addArg("-no-reboot");
     }
     qemu.step.dependOn(&iso_artifact.step);
 

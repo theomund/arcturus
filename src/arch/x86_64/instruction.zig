@@ -15,6 +15,7 @@
 // along with this program. If not, see <https://www.gnu.org/licenses/>.
 
 const gdt = @import("gdt.zig");
+const idt = @import("idt.zig");
 
 pub fn cli() void {
     asm volatile ("cli");
@@ -31,8 +32,19 @@ pub fn inb(port: u16) u8 {
     );
 }
 
+pub fn int3() void {
+    asm volatile ("int3");
+}
+
 pub fn lgdt(pointer: *const gdt.Pointer) void {
     asm volatile ("lgdt (%[pointer])"
+        :
+        : [pointer] "r" (pointer),
+    );
+}
+
+pub fn lidt(pointer: *const idt.Pointer) void {
+    asm volatile ("lidt (%[pointer])"
         :
         : [pointer] "r" (pointer),
     );
@@ -43,6 +55,10 @@ pub fn ltr(selector: u16) void {
         :
         : [selector] "r" (selector),
     );
+}
+
+pub fn nop() void {
+    asm volatile ("nop");
 }
 
 pub fn outb(port: u16, value: u8) void {
