@@ -16,6 +16,7 @@
 
 const instruction = @import("instruction.zig");
 const isr = @import("isr.zig");
+const std = @import("std");
 
 const Descriptor = packed struct {
     offset_1: u16,
@@ -90,3 +91,10 @@ pub const Table = struct {
         instruction.int3();
     }
 };
+
+test "Pointer Limit" {
+    const selector = 0x8;
+    const table = Table.init(selector);
+    const pointer = table.pointer();
+    try std.testing.expectEqual(0xFFF, pointer.limit);
+}
