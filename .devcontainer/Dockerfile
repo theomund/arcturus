@@ -17,6 +17,7 @@
 FROM quay.io/fedora/fedora:41
 RUN dnf copr enable -y mczernek/vale 
 RUN dnf install -y \
+    gcc-14.2.1 \
     git-2.48.1 \
     just-1.39.0 \
     qemu-system-x86-9.1.2 \
@@ -27,3 +28,4 @@ RUN dnf install -y \
     && dnf clean all
 RUN useradd -m developer
 USER developer
+RUN rustup-init -y --default-toolchain nightly-2025-02-16 --target x86_64-unknown-none

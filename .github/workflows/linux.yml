@@ -36,4 +36,4 @@ jobs:
           imageName: ghcr.io/theomund/arcturus/development
           cacheFrom: ghcr.io/theomund/arcturus/development
           push: always
-          runCmd: just build
+          runCmd: just all

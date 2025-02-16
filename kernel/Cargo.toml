@@ -14,37 +14,14 @@
 # You should have received a copy of the GNU Affero General Public License
 # along with this program. If not, see <https://www.gnu.org/licenses/>.
 
-# Run all CI/CD stages.
-all: lint test build
+[package]
+name = "kernel"
+version = "0.1.0"
+edition = "2024"
 
-# Build the project source code.
-build:
-    cargo build
+[[bin]]
+name = "kernel"
+bench = false
+test = false
 
-# Clean the project source tree.
-clean:
-    cargo clean
-
-# Run the Rust linter.
-clippy:
-    cargo clippy
-
-# Format the project source code.
-format:
-    cargo fmt
-
-# Run the project linters.
-lint: clippy vale yamllint
-
-# Run the project test suite.
-test:
-    cargo test
-
-# Run the prose linter.
-vale:
-    vale sync
-    vale README.md
-
-# Run the YAML linter.
-yamllint:
-    yamllint .github/workflows
+[dependencies]
