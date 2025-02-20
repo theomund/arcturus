@@ -15,4 +15,5 @@
 # along with this program. If not, see <https://www.gnu.org/licenses/>.
 
 [build]
+rustflags = ["-C", "relocation-model=static"]
 target = "x86_64-unknown-none"
