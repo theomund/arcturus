@@ -16,3 +16,5 @@
 
 #![no_std]
 #![warn(clippy::pedantic)]
+
+pub mod x86_64;

@@ -14,5 +14,37 @@
 // You should have received a copy of the GNU Affero General Public License
 // along with this program. If not, see <https://www.gnu.org/licenses/>.
 
-#![no_std]
-#![warn(clippy::pedantic)]
+use core::arch::asm;
+
+pub fn cli() {
+    unsafe {
+        asm!("cli");
+    }
+}
+
+pub fn hlt() {
+    unsafe {
+        asm!("hlt");
+    }
+}
+
+#[must_use]
+pub fn inb(port: u16) -> u8 {
+    let value: u8;
+    unsafe {
+        asm!("in al, dx", out("al") value, in("dx") port);
+    }
+    value
+}
+
+pub fn outb(port: u16, value: u8) {
+    unsafe {
+        asm!("out dx, al", in("dx") port, in("al") value);
+    }
+}
+
+pub fn sti() {
+    unsafe {
+        asm!("sti");
+    }
+}

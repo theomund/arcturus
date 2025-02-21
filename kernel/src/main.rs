@@ -16,24 +16,38 @@
 
 #![no_main]
 #![no_std]
+#![warn(clippy::pedantic)]
+#![feature(lazy_get)]
 
-use core::{arch::asm, panic::PanicInfo};
+mod lock;
+mod serial;
+
+use architecture::x86_64::instruction;
+use core::cell::LazyCell;
+use core::fmt::Write;
+use core::panic::PanicInfo;
+use serial::COM1;
 
 #[unsafe(no_mangle)]
 extern "C" fn kmain() -> ! {
+    serial::init().expect("Failed to initialize serial port driver.");
+
     done();
 }
 
 #[panic_handler]
 fn panic(info: &PanicInfo) -> ! {
+    let lock = &mut COM1.lock();
+    let port = LazyCell::force_mut(lock);
+
+    writeln!(port, "{}", info.message()).unwrap();
+
     done();
 }
 
 fn done() -> ! {
-    unsafe {
-        asm!("cli");
-        loop {
-            asm!("hlt");
-        }
+    instruction::cli();
+    loop {
+        instruction::hlt();
     }
 }

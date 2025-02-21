@@ -28,6 +28,28 @@ clean:
 clippy:
     cargo clippy
 
+# Debug a QEMU virtual machine with BIOS firmware.
+debug-bios: iso
+    qemu-system-x86_64 -S \
+                       -s \
+                       -M q35 \
+                       -m 2G \
+                       -cdrom target/iso/arcturus.iso \
+                       -boot d
+
+# Debug with the LLDB debugger.
+debug-lldb:
+    lldb -o "gdb-remote localhost:1234" target/iso/root/boot/kernel
+
+# Debug a QEMU virtual machine with UEFI firmware.
+debug-uefi: iso
+    qemu-system-x86_64 -S \
+                       -s \
+                       -M q35 \
+                       -m 2G \
+                       -drive if=pflash,unit=0,format=raw,file=/usr/share/edk2/ovmf/OVMF_CODE.fd,readonly=on \
+                       -cdrom target/iso/arcturus.iso
+
 # Format the project source code.
 format:
     cargo fmt
@@ -37,7 +59,7 @@ iso: kernel
     mkdir -p target/iso/root/boot
     cp -v target/x86_64-unknown-none/debug/kernel target/iso/root/boot/
     mkdir -p target/iso/root/boot/limine
-    cp -v bootloader/src/limine.conf /usr/share/limine/{limine-bios.sys,limine-{bios-cd,uefi-cd}.bin} target/iso/root/boot/limine/
+    cp -v bootloader/limine.conf /usr/share/limine/{limine-bios.sys,limine-{bios-cd,uefi-cd}.bin} target/iso/root/boot/limine/
     mkdir -p target/iso/root/EFI/BOOT
     cp -v /usr/share/limine/BOOT{X64,IA32}.EFI target/iso/root/EFI/BOOT/
     xorriso -as mkisofs -R -r -J -b boot/limine/limine-bios-cd.bin \
