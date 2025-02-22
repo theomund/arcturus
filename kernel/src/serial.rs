@@ -27,11 +27,7 @@ pub fn init() -> Result {
     let port = LazyCell::force_mut(lock);
 
     writeln!(port, "Arcturus v0.1.0 (x86_64)")?;
-    writeln!(port, "Copyright (C) 2025 Theomund\n")?;
-    write!(port, "> ")?;
-
-    let character = port.read();
-    writeln!(port, "{character}")?;
+    writeln!(port, "Copyright (C) 2025 Theomund")?;
 
     Ok(())
 }

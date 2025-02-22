@@ -45,8 +45,9 @@ impl Write for Port {
     }
 
     fn write_fmt(&mut self, arguments: Arguments<'_>) -> Result {
-        let string = arguments.as_str().expect("Failed to parse arguments.");
-        self.write_str(string)?;
+        if let Some(string) = arguments.as_str() {
+            self.write_str(string)?;
+        }
 
         Ok(())
     }

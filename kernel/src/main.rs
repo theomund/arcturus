@@ -26,7 +26,6 @@ use architecture::x86_64::instruction;
 use core::cell::LazyCell;
 use core::fmt::Write;
 use core::panic::PanicInfo;
-use serial::COM1;
 
 #[unsafe(no_mangle)]
 extern "C" fn kmain() -> ! {
@@ -37,7 +36,7 @@ extern "C" fn kmain() -> ! {
 
 #[panic_handler]
 fn panic(info: &PanicInfo) -> ! {
-    let lock = &mut COM1.lock();
+    let lock = &mut serial::COM1.lock();
     let port = LazyCell::force_mut(lock);
 
     writeln!(port, "{}", info.message()).ok();
