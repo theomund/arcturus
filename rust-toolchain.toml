@@ -15,5 +15,5 @@
 # along with this program. If not, see <https://www.gnu.org/licenses/>.
 
 [toolchain]
-channel = "nightly-2025-02-16"
+channel = "nightly-2025-02-20"
 targets = ["x86_64-unknown-none"]

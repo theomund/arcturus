@@ -26,3 +26,5 @@ bench = false
 test = false
 
 [dependencies]
+architecture = { path = "../architecture" }
+bootloader = { path = "../bootloader" }

@@ -14,5 +14,20 @@
 // You should have received a copy of the GNU Affero General Public License
 // along with this program. If not, see <https://www.gnu.org/licenses/>.
 
-#![no_std]
-#![warn(clippy::pedantic)]
+use architecture::x86_64::serial::{Port, Ports};
+use core::cell::LazyCell;
+use core::fmt::{Result, Write};
+
+use crate::lock::Spinlock;
+
+pub static COM1: Spinlock<LazyCell<Port>> = Spinlock::new(LazyCell::new(|| Port::new(Ports::COM1)));
+
+pub fn init() -> Result {
+    let lock = &mut COM1.lock();
+    let port = LazyCell::force_mut(lock);
+
+    writeln!(port, "Arcturus v0.1.0 (x86_64)")?;
+    writeln!(port, "Copyright (C) 2025 Theomund")?;
+
+    Ok(())
+}

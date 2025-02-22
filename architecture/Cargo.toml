@@ -14,22 +14,14 @@
 # You should have received a copy of the GNU Affero General Public License
 # along with this program. If not, see <https://www.gnu.org/licenses/>.
 
-FROM quay.io/fedora/fedora:41
-RUN dnf copr enable -y mczernek/vale \
-    && dnf copr enable -y theomund/copr
-RUN dnf install -y \
-    bash-completion-2.16 \
-    gcc-14.2.1 \
-    git-2.48.1 \
-    just-1.39.0 \
-    limine-9.0.0 \
-    lldb-19.1.7 \
-    qemu-system-x86-9.1.2 \
-    rustup-1.27.1 \
-    vale-3.9.5 \
-    xorriso-1.5.6 \
-    yamllint-1.35.1 \
-    && dnf clean all
-RUN useradd -m developer
-USER developer
-RUN rustup-init -y --default-toolchain nightly-2025-02-20 --target x86_64-unknown-none
+[package]
+name = "architecture"
+edition = "2024"
+license = "AGPL-3.0-or-later"
+version = "0.1.0"
+
+[lib]
+bench = false
+test = false
+
+[dependencies]
