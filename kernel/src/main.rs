@@ -40,7 +40,7 @@ fn panic(info: &PanicInfo) -> ! {
     let lock = &mut COM1.lock();
     let port = LazyCell::force_mut(lock);
 
-    writeln!(port, "{}", info.message()).unwrap();
+    writeln!(port, "{}", info.message()).ok();
 
     done();
 }
