@@ -20,7 +20,6 @@
 #![feature(lazy_get)]
 
 mod gdt;
-mod lock;
 mod logger;
 mod serial;
 mod tss;

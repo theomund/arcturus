@@ -17,9 +17,9 @@
 use architecture::x86_64::serial::{Port, Ports};
 use core::cell::LazyCell;
 use core::fmt::{Result, Write};
+use utility::lock::Spinlock;
 
 use crate::info;
-use crate::lock::Spinlock;
 
 pub static COM1: Spinlock<LazyCell<Port>> = Spinlock::new(LazyCell::new(|| Port::new(Ports::COM1)));
 
