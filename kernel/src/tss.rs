@@ -18,10 +18,13 @@ use architecture::x86_64::tss::Segment;
 use core::cell::LazyCell;
 
 use crate::gdt::GDT;
+use crate::info;
 use crate::lock::Spinlock;
 
 pub static TSS: Spinlock<LazyCell<Segment>> = Spinlock::new(LazyCell::new(Segment::new));
 
 pub fn init() {
     Segment::load(GDT.lock().selector(5));
+
+    info!("Initialized the task state segment.");
 }

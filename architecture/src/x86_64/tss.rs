@@ -14,7 +14,7 @@
 // You should have received a copy of the GNU Affero General Public License
 // along with this program. If not, see <https://www.gnu.org/licenses/>.
 
-use super::gdt;
+use super::gdt::Selector;
 use super::instruction;
 
 #[repr(C, packed(4))]
@@ -48,7 +48,7 @@ impl Segment {
         }
     }
 
-    pub fn load(selector: gdt::Selector) {
+    pub fn load(selector: Selector) {
         instruction::ltr(selector);
     }
 }

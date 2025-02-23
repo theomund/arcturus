@@ -18,16 +18,23 @@ use architecture::x86_64::serial::{Port, Ports};
 use core::cell::LazyCell;
 use core::fmt::{Result, Write};
 
+use crate::info;
 use crate::lock::Spinlock;
 
 pub static COM1: Spinlock<LazyCell<Port>> = Spinlock::new(LazyCell::new(|| Port::new(Ports::COM1)));
 
-pub fn init() -> Result {
+pub fn setup_title() -> Result {
     let guard = &mut COM1.lock();
     let port = LazyCell::force_mut(guard);
 
     writeln!(port, "Arcturus v0.1.0 (x86_64)")?;
-    writeln!(port, "Copyright (C) 2025 Theomund")?;
+    writeln!(port, "Copyright (C) 2025 Theomund\n")?;
 
     Ok(())
+}
+
+pub fn init() {
+    setup_title().expect("Failed to setup title.");
+
+    info!("Initialized the serial port driver.");
 }

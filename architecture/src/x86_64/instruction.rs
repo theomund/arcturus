@@ -16,7 +16,7 @@
 
 use core::arch::asm;
 
-use super::gdt;
+use super::gdt::{Pointer, Selector};
 
 pub fn cli() {
     unsafe {
@@ -39,13 +39,13 @@ pub fn inb(port: u16) -> u8 {
     value
 }
 
-pub fn lgdt(pointer: &gdt::Pointer) {
+pub fn lgdt(pointer: &Pointer) {
     unsafe {
         asm!("lgdt [{}]", in(reg) pointer);
     }
 }
 
-pub fn ltr(selector: gdt::Selector) {
+pub fn ltr(selector: Selector) {
     unsafe {
         asm!("ltr {0:x}", in(reg) selector.0);
     }

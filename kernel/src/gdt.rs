@@ -17,6 +17,7 @@
 use architecture::x86_64::gdt::Table;
 use core::cell::LazyCell;
 
+use crate::info;
 use crate::lock::Spinlock;
 use crate::tss::TSS;
 
@@ -28,4 +29,6 @@ pub static GDT: Spinlock<LazyCell<Table>> = Spinlock::new(LazyCell::new(|| {
 
 pub fn init() {
     GDT.lock().load();
+
+    info!("Initialized the global descriptor table.");
 }
