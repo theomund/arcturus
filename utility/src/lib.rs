@@ -14,21 +14,9 @@
 // You should have received a copy of the GNU Affero General Public License
 // along with this program. If not, see <https://www.gnu.org/licenses/>.
 
-use architecture::x86_64::gdt::Table;
-use core::cell::LazyCell;
-use utility::info;
-use utility::lock::Spinlock;
+#![no_std]
+#![feature(lazy_get)]
+#![warn(clippy::pedantic)]
 
-use crate::tss::TSS;
-
-pub static GDT: Spinlock<LazyCell<Table>> = Spinlock::new(LazyCell::new(|| {
-    let guard = &mut TSS.lock();
-    let segment = LazyCell::force_mut(guard);
-    Table::new(segment)
-}));
-
-pub fn init() {
-    GDT.lock().load();
-
-    info!("Initialized the global descriptor table.");
-}
+pub mod lock;
+pub mod logging;

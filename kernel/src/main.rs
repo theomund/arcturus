@@ -20,38 +20,39 @@
 #![feature(lazy_get)]
 
 mod gdt;
-mod lock;
+mod logger;
 mod serial;
 mod tss;
 
 use architecture::x86_64::instruction;
-use core::cell::LazyCell;
-use core::fmt::Write;
 use core::panic::PanicInfo;
+use utility::{error, info};
 
 #[unsafe(no_mangle)]
 extern "C" fn kmain() -> ! {
-    serial::init().expect("Failed to initialize serial port driver.");
+    logger::init();
+
+    serial::init();
 
     gdt::init();
 
     tss::init();
+
+    info!("Successfully initialized the operating system.");
 
     done();
 }
 
 #[panic_handler]
 fn panic(info: &PanicInfo) -> ! {
-    let guard = &mut serial::COM1.lock();
-    let port = LazyCell::force_mut(guard);
-
-    writeln!(port, "{}", info.message()).ok();
+    error!("{}", info.message());
 
     done();
 }
 
 fn done() -> ! {
     instruction::cli();
+
     loop {
         instruction::hlt();
     }

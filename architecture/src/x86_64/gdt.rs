@@ -16,7 +16,7 @@
 
 use super::instruction;
 use super::register;
-use super::tss;
+use super::tss::Segment;
 
 pub struct Table {
     descriptors: [Descriptor; 7],
@@ -74,7 +74,7 @@ impl Selector {
 
 impl Table {
     #[must_use]
-    pub fn new(segment: *const tss::Segment) -> Self {
+    pub fn new(segment: *const Segment) -> Self {
         let null_descriptor = Descriptor::new(0x0, 0x0, 0x0, 0x0);
         let null_selector = Selector::new(0, 0);
 
@@ -94,7 +94,7 @@ impl Table {
         let task_state_base_low = (task_state_base & 0xFFFF_FFFF) as u32;
         let task_state_base_high = (task_state_base >> 32) as u32;
         let task_state_limit =
-            u32::try_from(size_of::<tss::Segment>() - 1).expect("Failed to calculate limit.");
+            u32::try_from(size_of::<Segment>() - 1).expect("Failed to calculate limit.");
 
         let task_state_descriptor_low =
             Descriptor::new(task_state_base_low, task_state_limit, 0x89, 0x0);
@@ -169,7 +169,7 @@ mod tests {
     use super::*;
 
     fn create_table() -> Table {
-        let segment = tss::Segment::new();
+        let segment = Segment::new();
         Table::new(&segment)
     }
 

@@ -15,5 +15,5 @@
 # along with this program. If not, see <https://www.gnu.org/licenses/>.
 
 [workspace]
-members = ["architecture", "bootloader", "kernel"]
+members = ["architecture", "bootloader", "kernel", "utility"]
 resolver = "3"
