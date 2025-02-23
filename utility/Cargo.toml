@@ -17,18 +17,13 @@
 cargo-features = ["per-package-target"]
 
 [package]
-name = "kernel"
-default-target = "x86_64-unknown-none"
+name = "utility"
+default-target = "x86_64-unknown-linux-gnu"
 edition = "2024"
 license = "AGPL-3.0-or-later"
 version = "0.1.0"
 
-[[bin]]
-name = "kernel"
+[lib]
 bench = false
-test = false
 
 [dependencies]
-architecture = { path = "../architecture" }
-bootloader = { path = "../bootloader" }
-utility = { path = "../utility" }
