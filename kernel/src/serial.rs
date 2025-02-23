@@ -23,8 +23,8 @@ use crate::lock::Spinlock;
 pub static COM1: Spinlock<LazyCell<Port>> = Spinlock::new(LazyCell::new(|| Port::new(Ports::COM1)));
 
 pub fn init() -> Result {
-    let lock = &mut COM1.lock();
-    let port = LazyCell::force_mut(lock);
+    let guard = &mut COM1.lock();
+    let port = LazyCell::force_mut(guard);
 
     writeln!(port, "Arcturus v0.1.0 (x86_64)")?;
     writeln!(port, "Copyright (C) 2025 Theomund")?;

@@ -19,8 +19,10 @@
 #![warn(clippy::pedantic)]
 #![feature(lazy_get)]
 
+mod gdt;
 mod lock;
 mod serial;
+mod tss;
 
 use architecture::x86_64::instruction;
 use core::cell::LazyCell;
@@ -31,13 +33,17 @@ use core::panic::PanicInfo;
 extern "C" fn kmain() -> ! {
     serial::init().expect("Failed to initialize serial port driver.");
 
+    gdt::init();
+
+    tss::init();
+
     done();
 }
 
 #[panic_handler]
 fn panic(info: &PanicInfo) -> ! {
-    let lock = &mut serial::COM1.lock();
-    let port = LazyCell::force_mut(lock);
+    let guard = &mut serial::COM1.lock();
+    let port = LazyCell::force_mut(guard);
 
     writeln!(port, "{}", info.message()).ok();
 

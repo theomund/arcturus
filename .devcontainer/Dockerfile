@@ -32,4 +32,4 @@ RUN dnf install -y \
     && dnf clean all
 RUN useradd -m developer
 USER developer
-RUN rustup-init -y --default-toolchain nightly-2025-02-20 --target x86_64-unknown-none
+RUN rustup-init -y --default-toolchain nightly-2025-02-22 --target x86_64-unknown-none

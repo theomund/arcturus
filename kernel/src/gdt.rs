@@ -14,8 +14,18 @@
 // You should have received a copy of the GNU Affero General Public License
 // along with this program. If not, see <https://www.gnu.org/licenses/>.
 
-pub mod gdt;
-pub mod instruction;
-pub mod register;
-pub mod serial;
-pub mod tss;
+use architecture::x86_64::gdt::Table;
+use core::cell::LazyCell;
+
+use crate::lock::Spinlock;
+use crate::tss::TSS;
+
+pub static GDT: Spinlock<LazyCell<Table>> = Spinlock::new(LazyCell::new(|| {
+    let guard = &mut TSS.lock();
+    let segment = LazyCell::force_mut(guard);
+    Table::new(segment)
+}));
+
+pub fn init() {
+    GDT.lock().load();
+}
