@@ -14,63 +14,57 @@
 // You should have received a copy of the GNU Affero General Public License
 // along with this program. If not, see <https://www.gnu.org/licenses/>.
 
-pub enum Level {
-    Debug,
-    Error,
-    Info,
-    Trace,
-    Warn,
-}
+use core::cell::LazyCell;
+use core::fmt::{Arguments, Error, Write, write};
+use utility::logging::{Level, Log, set_logger};
 
-#[macro_export]
-macro_rules! log {
-    ($level:expr, $($arguments:tt)+) => {{
-        use core::fmt::Write;
+use crate::serial::COM1;
 
-        let guard = &mut $crate::serial::COM1.lock();
+struct SerialLogger;
+
+impl Log for SerialLogger {
+    fn handler(&self, level: Level, arguments: Arguments<'_>) -> Result<(), Error> {
+        let guard = &mut COM1.lock();
         let port = LazyCell::force_mut(guard);
 
-        match $level {
-            $crate::logger::Level::Debug => {
-                writeln!(port, "[DEBUG] {}", format_args!($($arguments)+)).ok();
+        match level {
+            Level::Debug => {
+                write!(port, "\x1b[38;5;34m")?;
+                write!(port, "[DEBUG]")?;
+                write!(port, "\x1b[0m ")?;
             }
-            $crate::logger::Level::Error => {
-                writeln!(port, "[ERROR] {}", format_args!($($arguments)+)).ok();
+            Level::Error => {
+                write!(port, "\x1b[38;5;160m")?;
+                write!(port, "[ERROR]")?;
+                write!(port, "\x1b[0m ")?;
             }
-            $crate::logger::Level::Info => {
-                writeln!(port, "[INFO] {}", format_args!($($arguments)+)).ok();
+            Level::Info => {
+                write!(port, "\x1b[38;5;39m")?;
+                write!(port, "[INFO]")?;
+                write!(port, "\x1b[0m ")?;
             }
-            $crate::logger::Level::Trace => {
-                writeln!(port, "[TRACE] {}", format_args!($($arguments)+)).ok();
+            Level::Trace => {
+                write!(port, "\x1b[38;5;135m")?;
+                write!(port, "[TRACE]")?;
+                write!(port, "\x1b[0m ")?;
             }
-            $crate::logger::Level::Warn => {
-                writeln!(port, "[WARN] {}", format_args!($($arguments)+)).ok();
+            Level::Warn => {
+                write!(port, "\x1b[38;5;184m")?;
+                write!(port, "[WARN]")?;
+                write!(port, "\x1b[0m ")?;
             }
         }
-    }};
+
+        write(port, arguments)?;
+
+        writeln!(port)?;
+
+        Ok(())
+    }
 }
 
-#[macro_export]
-macro_rules! debug {
-    ($($arguments:tt)+) => ($crate::log!($crate::logger::Level::Debug, $($arguments)+));
-}
+static SERIAL_LOGGER: SerialLogger = SerialLogger;
 
-#[macro_export]
-macro_rules! error {
-    ($($arguments:tt)+) => ($crate::log!($crate::logger::Level::Error, $($arguments)+));
-}
-
-#[macro_export]
-macro_rules! info {
-    ($($arguments:tt)+) => ($crate::log!($crate::logger::Level::Info, $($arguments)+));
-}
-
-#[macro_export]
-macro_rules! trace {
-    ($($arguments:tt)+) => ($crate::log!($crate::logger::Level::Trace, $($arguments)+));
-}
-
-#[macro_export]
-macro_rules! warn {
-    ($($arguments:tt)+) => ($crate::log!($crate::logger::Level::Warn, $($arguments)+));
+pub fn init() {
+    set_logger(&SERIAL_LOGGER);
 }

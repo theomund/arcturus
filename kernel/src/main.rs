@@ -25,11 +25,13 @@ mod serial;
 mod tss;
 
 use architecture::x86_64::instruction;
-use core::cell::LazyCell;
 use core::panic::PanicInfo;
+use utility::{error, info};
 
 #[unsafe(no_mangle)]
 extern "C" fn kmain() -> ! {
+    logger::init();
+
     serial::init();
 
     gdt::init();
@@ -50,6 +52,7 @@ fn panic(info: &PanicInfo) -> ! {
 
 fn done() -> ! {
     instruction::cli();
+
     loop {
         instruction::hlt();
     }

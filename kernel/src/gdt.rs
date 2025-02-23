@@ -16,9 +16,9 @@
 
 use architecture::x86_64::gdt::Table;
 use core::cell::LazyCell;
+use utility::info;
 use utility::lock::Spinlock;
 
-use crate::info;
 use crate::tss::TSS;
 
 pub static GDT: Spinlock<LazyCell<Table>> = Spinlock::new(LazyCell::new(|| {

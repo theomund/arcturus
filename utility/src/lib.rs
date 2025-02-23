@@ -15,6 +15,8 @@
 // along with this program. If not, see <https://www.gnu.org/licenses/>.
 
 #![no_std]
+#![feature(lazy_get)]
 #![warn(clippy::pedantic)]
 
 pub mod lock;
+pub mod logging;

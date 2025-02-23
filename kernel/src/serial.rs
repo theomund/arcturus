@@ -27,14 +27,17 @@ pub fn setup_title() -> Result {
     let guard = &mut COM1.lock();
     let port = LazyCell::force_mut(guard);
 
+    write!(port, "\x1b[38;5;202m")?;
+    write!(port, "\x1b[1m")?;
     writeln!(port, "Arcturus v0.1.0 (x86_64)")?;
-    writeln!(port, "Copyright (C) 2025 Theomund\n")?;
+    writeln!(port, "Copyright (C) 2025 Theomund")?;
+    writeln!(port, "\x1b[0m")?;
 
     Ok(())
 }
 
 pub fn init() {
-    setup_title().expect("Failed to setup title.");
+    setup_title().expect("Failed to setup title bar.");
 
     info!("Initialized the serial port driver.");
 }
