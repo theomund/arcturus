@@ -14,51 +14,23 @@
 // You should have received a copy of the GNU Affero General Public License
 // along with this program. If not, see <https://www.gnu.org/licenses/>.
 
-#![no_main]
-#![no_std]
-#![warn(clippy::pedantic)]
-#![feature(lazy_get)]
-#![feature(abi_x86_interrupt)]
+use architecture::x86_64::idt::Table;
+use core::cell::LazyCell;
+use utility::info;
+use utility::lock::Spinlock;
 
-mod gdt;
-mod idt;
-mod isr;
-mod logger;
-mod serial;
-mod tss;
+use crate::gdt::GDT;
+use crate::isr;
 
-use architecture::x86_64::instruction;
-use core::panic::PanicInfo;
-use utility::{error, info};
+pub static IDT: Spinlock<LazyCell<Table>> = Spinlock::new(LazyCell::new(|| {
+    Table::new(
+        isr::breakpoint_handler,
+        isr::segment_not_present_handler,
+        GDT.lock().selector(1),
+    )
+}));
 
-#[unsafe(no_mangle)]
-extern "C" fn kmain() -> ! {
-    logger::init();
-
-    serial::init();
-
-    gdt::init();
-
-    tss::init();
-
-    idt::init();
-
-    info!("Successfully initialized the operating system.");
-
-    done();
-}
-
-#[panic_handler]
-fn panic(info: &PanicInfo) -> ! {
-    error!("{}", info.message());
-
-    done();
-}
-
-fn done() -> ! {
-    instruction::cli();
-
-    loop {
-        instruction::hlt();
-    }
+pub fn init() {
+    IDT.lock().load();
+    info!("Initialized the interrupt descriptor table.");
 }

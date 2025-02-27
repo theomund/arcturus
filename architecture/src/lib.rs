@@ -15,6 +15,7 @@
 // along with this program. If not, see <https://www.gnu.org/licenses/>.
 
 #![no_std]
+#![feature(abi_x86_interrupt)]
 #![warn(clippy::pedantic)]
 
 pub mod x86_64;

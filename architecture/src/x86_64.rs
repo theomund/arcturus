@@ -15,6 +15,7 @@
 // along with this program. If not, see <https://www.gnu.org/licenses/>.
 
 pub mod gdt;
+pub mod idt;
 pub mod instruction;
 pub mod register;
 pub mod serial;

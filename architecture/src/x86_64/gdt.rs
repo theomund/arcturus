@@ -24,7 +24,7 @@ pub struct Table {
 }
 
 #[repr(C, packed(2))]
-pub struct Pointer {
+pub struct Register {
     limit: u16,
     base: u64,
 }
@@ -132,13 +132,12 @@ impl Table {
     }
 
     fn limit(&self) -> u16 {
-        u16::try_from(self.descriptors.len() * size_of::<u64>() - 1)
-            .expect("Failed to calculate limit.")
+        (size_of_val(&self.descriptors) - 1) as u16
     }
 
     #[must_use]
-    pub fn pointer(&self) -> Pointer {
-        Pointer {
+    pub fn register(&self) -> Register {
+        Register {
             limit: self.limit(),
             base: self.base(),
         }
@@ -152,8 +151,8 @@ impl Table {
     pub fn load(&self) {
         instruction::cli();
 
-        let pointer = self.pointer();
-        instruction::lgdt(&pointer);
+        let register = self.register();
+        instruction::lgdt(&register);
 
         register::CS::set(self.selector(1));
         register::DS::set(self.selector(2));

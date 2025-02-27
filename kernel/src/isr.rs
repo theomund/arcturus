@@ -14,51 +14,13 @@
 // You should have received a copy of the GNU Affero General Public License
 // along with this program. If not, see <https://www.gnu.org/licenses/>.
 
-#![no_main]
-#![no_std]
-#![warn(clippy::pedantic)]
-#![feature(lazy_get)]
-#![feature(abi_x86_interrupt)]
+use architecture::x86_64::idt::Frame;
+use utility::{debug, warn};
 
-mod gdt;
-mod idt;
-mod isr;
-mod logger;
-mod serial;
-mod tss;
-
-use architecture::x86_64::instruction;
-use core::panic::PanicInfo;
-use utility::{error, info};
-
-#[unsafe(no_mangle)]
-extern "C" fn kmain() -> ! {
-    logger::init();
-
-    serial::init();
-
-    gdt::init();
-
-    tss::init();
-
-    idt::init();
-
-    info!("Successfully initialized the operating system.");
-
-    done();
+pub extern "x86-interrupt" fn breakpoint_handler(frame: Frame) {
+    debug!("Handled the breakpoint exception.");
 }
 
-#[panic_handler]
-fn panic(info: &PanicInfo) -> ! {
-    error!("{}", info.message());
-
-    done();
-}
-
-fn done() -> ! {
-    instruction::cli();
-
-    loop {
-        instruction::hlt();
-    }
+pub extern "x86-interrupt" fn segment_not_present_handler(frame: Frame, code: u64) {
+    warn!("Handled the segment not present exception.");
 }
