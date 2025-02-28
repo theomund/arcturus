@@ -61,7 +61,6 @@ impl Default for Descriptor {
 }
 
 impl Descriptor {
-    #[must_use]
     pub fn new(
         handler: Handler,
         selector: Selector,
@@ -100,7 +99,6 @@ impl Descriptor {
         }
     }
 
-    #[must_use]
     pub fn new_with_error(
         handler: ErrorHandler,
         selector: Selector,
