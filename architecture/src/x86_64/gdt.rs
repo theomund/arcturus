@@ -132,7 +132,7 @@ impl Table {
     }
 
     fn limit(&self) -> u16 {
-        (size_of_val(&self.descriptors) - 1) as u16
+        u16::try_from(size_of_val(&self.descriptors) - 1).expect("Failed to calculate limit.")
     }
 
     #[must_use]

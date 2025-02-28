@@ -15,12 +15,100 @@
 // along with this program. If not, see <https://www.gnu.org/licenses/>.
 
 use architecture::x86_64::idt::Frame;
-use utility::{debug, warn};
+use utility::{debug, error, warn};
+
+use crate::done;
+
+pub extern "x86-interrupt" fn division_error_handler(frame: Frame) {
+    warn!("Handled the division error exception.");
+}
+
+pub extern "x86-interrupt" fn debug_handler(frame: Frame) {
+    debug!("Handled the debug trap.");
+}
+
+pub extern "x86-interrupt" fn non_maskable_interrupt_handler(frame: Frame) {
+    warn!("Handled the non-maskable interrupt exception.");
+}
 
 pub extern "x86-interrupt" fn breakpoint_handler(frame: Frame) {
-    debug!("Handled the breakpoint exception.");
+    debug!("Handled the breakpoint trap.");
+}
+
+pub extern "x86-interrupt" fn overflow_handler(frame: Frame) {
+    warn!("Handled the overflow trap.");
+}
+
+pub extern "x86-interrupt" fn bound_range_exceeded_handler(frame: Frame) {
+    warn!("Handled the bound range exceeded exception.");
+}
+
+pub extern "x86-interrupt" fn invalid_opcode_handler(frame: Frame) {
+    warn!("Handled the invalid opcode exception.");
+}
+
+pub extern "x86-interrupt" fn device_not_available_handler(frame: Frame) {
+    warn!("Handled the device not available exception.");
+}
+
+pub extern "x86-interrupt" fn double_fault_handler(frame: Frame, code: u64) -> ! {
+    error!("Handled the double fault exception.");
+    done();
+}
+
+pub extern "x86-interrupt" fn invalid_tss_handler(frame: Frame, code: u64) {
+    warn!("Handled the invalid TSS exception.");
 }
 
 pub extern "x86-interrupt" fn segment_not_present_handler(frame: Frame, code: u64) {
     warn!("Handled the segment not present exception.");
+}
+
+pub extern "x86-interrupt" fn stack_segment_fault_handler(frame: Frame, code: u64) {
+    warn!("Handled the stack segment fault exception.");
+}
+
+pub extern "x86-interrupt" fn general_protection_fault_handler(frame: Frame, code: u64) {
+    warn!("Handled the general protection fault exception.");
+}
+
+pub extern "x86-interrupt" fn page_fault_handler(frame: Frame, code: u64) {
+    warn!("Handled the page fault exception.");
+}
+
+pub extern "x86-interrupt" fn x87_floating_point_handler(frame: Frame) {
+    warn!("Handled the x87 floating-point exception.");
+}
+
+pub extern "x86-interrupt" fn alignment_check_handler(frame: Frame, code: u64) {
+    warn!("Handled the alignment check exception.");
+}
+
+pub extern "x86-interrupt" fn machine_check_handler(frame: Frame) -> ! {
+    error!("Handled the machine check exception.");
+    done();
+}
+
+pub extern "x86-interrupt" fn simd_floating_point_handler(frame: Frame) {
+    warn!("Handled the SIMD floating-point exception.");
+}
+
+pub extern "x86-interrupt" fn virtualization_handler(frame: Frame) {
+    warn!("Handled the virtualization exception.");
+}
+
+pub extern "x86-interrupt" fn control_protection_handler(frame: Frame, code: u64) {
+    warn!("Handled the control protection exception.");
+}
+
+pub extern "x86-interrupt" fn hypervisor_injection_handler(frame: Frame) {
+    warn!("Handled the hypervisor injection exception.");
+}
+
+pub extern "x86-interrupt" fn vmm_communication_handler(frame: Frame, code: u64) {
+    warn!("Handled the VMM communication exception.");
+}
+
+pub extern "x86-interrupt" fn security_handler(frame: Frame, code: u64) {
+    warn!("Handled the security exception.");
 }
