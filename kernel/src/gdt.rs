@@ -21,11 +21,8 @@ use utility::lock::Spinlock;
 
 use crate::tss::TSS;
 
-pub static GDT: Spinlock<LazyCell<Table>> = Spinlock::new(LazyCell::new(|| {
-    let guard = &mut TSS.lock();
-    let segment = LazyCell::force_mut(guard);
-    Table::new(segment)
-}));
+pub static GDT: Spinlock<LazyCell<Table>> =
+    Spinlock::new(LazyCell::new(|| Table::new(&**TSS.lock())));
 
 pub fn init() {
     GDT.lock().load();

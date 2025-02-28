@@ -16,7 +16,7 @@
 
 use core::arch::asm;
 
-use super::gdt::{Pointer, Selector};
+use super::{gdt, idt};
 
 pub fn cli() {
     unsafe {
@@ -39,13 +39,31 @@ pub fn inb(port: u16) -> u8 {
     value
 }
 
-pub fn lgdt(pointer: &Pointer) {
+pub fn int<const VECTOR: u8>() {
     unsafe {
-        asm!("lgdt [{}]", in(reg) pointer);
+        asm!("int {vector}", vector = const VECTOR);
     }
 }
 
-pub fn ltr(selector: Selector) {
+pub fn int3() {
+    unsafe {
+        asm!("int3");
+    }
+}
+
+pub fn lgdt(register: &gdt::Register) {
+    unsafe {
+        asm!("lgdt [{}]", in(reg) register);
+    }
+}
+
+pub fn lidt(register: &idt::Register) {
+    unsafe {
+        asm!("lidt [{}]", in(reg) register);
+    }
+}
+
+pub fn ltr(selector: gdt::Selector) {
     unsafe {
         asm!("ltr {0:x}", in(reg) selector.0);
     }

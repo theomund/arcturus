@@ -18,8 +18,11 @@
 #![no_std]
 #![warn(clippy::pedantic)]
 #![feature(lazy_get)]
+#![feature(abi_x86_interrupt)]
 
 mod gdt;
+mod idt;
+mod isr;
 mod logger;
 mod serial;
 mod tss;
@@ -37,6 +40,8 @@ extern "C" fn kmain() -> ! {
     gdt::init();
 
     tss::init();
+
+    idt::init();
 
     info!("Successfully initialized the operating system.");
 
