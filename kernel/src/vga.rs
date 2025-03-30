@@ -14,54 +14,8 @@
 // You should have received a copy of the GNU Affero General Public License
 // along with this program. If not, see <https://www.gnu.org/licenses/>.
 
-#![no_main]
-#![no_std]
-#![warn(clippy::pedantic)]
-#![feature(lazy_get)]
-#![feature(abi_x86_interrupt)]
+use utility::info;
 
-mod gdt;
-mod idt;
-mod isr;
-mod logger;
-mod serial;
-mod tss;
-mod vga;
-
-use architecture::x86_64::instruction;
-use core::panic::PanicInfo;
-use utility::{error, info};
-
-#[unsafe(no_mangle)]
-extern "C" fn kmain() -> ! {
-    logger::init();
-
-    serial::init();
-
-    gdt::init();
-
-    tss::init();
-
-    idt::init();
-
-    vga::init();
-
-    info!("Successfully initialized the operating system.");
-
-    done();
-}
-
-#[panic_handler]
-fn panic(info: &PanicInfo) -> ! {
-    error!("{}", info.message());
-
-    done();
-}
-
-fn done() -> ! {
-    instruction::cli();
-
-    loop {
-        instruction::hlt();
-    }
+pub fn init() {
+    info!("Initialized the VGA framebuffer driver.");
 }
