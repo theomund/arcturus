@@ -22,7 +22,7 @@ RUN dnf install -y \
     gcc-14.2.1 \
     git-2.49.0 \
     just-1.40.0 \
-    limine-9.1.0 \
+    limine-9.2.1 \
     lldb-19.1.7 \
     qemu-system-x86-9.1.3 \
     rustup-1.27.1 \
