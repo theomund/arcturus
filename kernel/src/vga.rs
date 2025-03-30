@@ -14,8 +14,34 @@
 // You should have received a copy of the GNU Affero General Public License
 // along with this program. If not, see <https://www.gnu.org/licenses/>.
 
+use bootloader::limine::framebuffer::{Framebuffer, Request};
 use utility::info;
 
+#[used]
+#[unsafe(link_section = ".limine_requests")]
+static FRAMEBUFFER_REQUEST: Request = Request::new();
+
+pub fn draw_line(framebuffer: &Framebuffer) {
+    for i in 0..100 {
+        let pixel_offset = usize::try_from(i * framebuffer.pitch() + i * 4).unwrap();
+        let address = framebuffer.address().wrapping_add(pixel_offset);
+        unsafe {
+            address.cast::<u32>().write_unaligned(0xFFFF_FFFF);
+        }
+    }
+}
+
 pub fn init() {
+    let response = FRAMEBUFFER_REQUEST.response().unwrap();
+    assert_eq!(response.revision(), 1);
+    assert_eq!(response.framebuffer_count(), 1);
+
+    let framebuffer = response.framebuffers().next().unwrap();
+    assert_eq!(framebuffer.width(), 1280);
+    assert_eq!(framebuffer.height(), 800);
+    assert_eq!(framebuffer.pitch(), 5120);
+
+    draw_line(&framebuffer);
+
     info!("Initialized the VGA framebuffer driver.");
 }
