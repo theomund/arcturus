@@ -39,5 +39,11 @@ pub fn init() {
     assert!(BASE_REVISION.is_supported());
     assert!(BASE_REVISION.is_valid());
     assert_eq!(BASE_REVISION.loaded(), 3);
+
+    let response = INFO_REQUEST.response().unwrap();
+    assert_eq!(response.revision(), 0);
+    assert_eq!(response.name(), "Limine");
+    assert_eq!(response.version(), "9.2.1");
+
     info!("Initialized the boot module.");
 }

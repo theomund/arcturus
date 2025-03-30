@@ -14,13 +14,16 @@
 // You should have received a copy of the GNU Affero General Public License
 // along with this program. If not, see <https://www.gnu.org/licenses/>.
 
-use core::ptr;
+use core::{
+    ffi::{CStr, c_char},
+    ptr,
+};
 
 #[repr(C)]
 pub struct Request {
     id: [u64; 4],
     revision: u64,
-    response: *mut Response,
+    response: *const Response,
 }
 
 impl Default for Request {
@@ -40,7 +43,19 @@ impl Request {
                 0x2794_26fc_f5f5_9740,
             ],
             revision: 0,
-            response: ptr::null_mut(),
+            response: ptr::null(),
+        }
+    }
+
+    #[must_use]
+    pub fn response(&self) -> Option<Response> {
+        if self.response.is_null() {
+            None
+        } else {
+            unsafe {
+                let response = self.response.read_volatile();
+                Some(response)
+            }
         }
     }
 }
@@ -49,8 +64,25 @@ unsafe impl Send for Request {}
 unsafe impl Sync for Request {}
 
 #[repr(C)]
-struct Response {
+pub struct Response {
     revision: u64,
-    name: *const u8,
-    version: *const u8,
+    name: *const c_char,
+    version: *const c_char,
+}
+
+impl Response {
+    #[must_use]
+    pub fn revision(&self) -> u64 {
+        self.revision
+    }
+
+    #[must_use]
+    pub fn name(&self) -> &str {
+        unsafe { CStr::from_ptr(self.name).to_str().unwrap() }
+    }
+
+    #[must_use]
+    pub fn version(&self) -> &str {
+        unsafe { CStr::from_ptr(self.version).to_str().unwrap() }
+    }
 }
