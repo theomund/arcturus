@@ -20,16 +20,16 @@ RUN dnf copr enable -y mczernek/vale \
 RUN dnf install -y \
     bash-completion-2.16 \
     gcc-14.2.1 \
-    git-2.48.1 \
-    just-1.39.0 \
-    limine-9.0.0 \
+    git-2.49.0 \
+    just-1.40.0 \
+    limine-9.2.1 \
     lldb-19.1.7 \
-    qemu-system-x86-9.1.2 \
+    qemu-system-x86-9.1.3 \
     rustup-1.27.1 \
-    vale-3.9.5 \
+    vale-3.9.6 \
     xorriso-1.5.6 \
-    yamllint-1.35.1 \
+    yamllint-1.37.0 \
     && dnf clean all
 RUN useradd -m developer
 USER developer
-RUN rustup-init -y --default-toolchain nightly-2025-02-22 --target x86_64-unknown-none
+RUN rustup-init -y --default-toolchain nightly-2025-03-29 --target x86_64-unknown-none

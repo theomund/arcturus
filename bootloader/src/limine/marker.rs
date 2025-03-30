@@ -14,57 +14,47 @@
 // You should have received a copy of the GNU Affero General Public License
 // along with this program. If not, see <https://www.gnu.org/licenses/>.
 
-#![no_main]
-#![no_std]
-#![warn(clippy::pedantic)]
-#![feature(lazy_get)]
-#![feature(abi_x86_interrupt)]
-
-mod boot;
-mod gdt;
-mod idt;
-mod isr;
-mod logger;
-mod serial;
-mod tss;
-mod vga;
-
-use architecture::x86_64::instruction;
-use core::panic::PanicInfo;
-use utility::{error, info};
-
-#[unsafe(no_mangle)]
-extern "C" fn kmain() -> ! {
-    logger::init();
-
-    serial::init();
-
-    boot::init();
-
-    gdt::init();
-
-    tss::init();
-
-    idt::init();
-
-    vga::init();
-
-    info!("Successfully initialized the operating system.");
-
-    done();
+#[repr(transparent)]
+pub struct RequestsStart {
+    id: [u64; 4],
 }
 
-#[panic_handler]
-fn panic(info: &PanicInfo) -> ! {
-    error!("{}", info.message());
-
-    done();
+impl Default for RequestsStart {
+    fn default() -> Self {
+        Self::new()
+    }
 }
 
-fn done() -> ! {
-    instruction::cli();
+impl RequestsStart {
+    #[must_use]
+    pub const fn new() -> Self {
+        Self {
+            id: [
+                0xf6b8_f4b3_9de7_d1ae,
+                0xfab9_1a69_40fc_b9cf,
+                0x785c_6ed0_15d3_e316,
+                0x181e_920a_7852_b9d9,
+            ],
+        }
+    }
+}
 
-    loop {
-        instruction::hlt();
+#[repr(transparent)]
+pub struct RequestsEnd {
+    id: [u64; 2],
+}
+
+impl Default for RequestsEnd {
+    fn default() -> Self {
+        Self::new()
+    }
+}
+
+impl RequestsEnd {
+    #[must_use]
+    pub const fn new() -> Self {
+        Self {
+            id: [0xadc0_e053_1bb1_0d03, 0x9572_709f_3176_4c62],
+        }
     }
 }
