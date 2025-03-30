@@ -14,7 +14,43 @@
 // You should have received a copy of the GNU Affero General Public License
 // along with this program. If not, see <https://www.gnu.org/licenses/>.
 
-#![no_std]
-#![warn(clippy::pedantic)]
+use core::ptr;
 
-pub mod limine;
+#[repr(C)]
+pub struct Request {
+    id: [u64; 4],
+    revision: u64,
+    response: *mut Response,
+}
+
+impl Default for Request {
+    fn default() -> Self {
+        Self::new()
+    }
+}
+
+impl Request {
+    #[must_use]
+    pub const fn new() -> Self {
+        Self {
+            id: [
+                0xc7b1_dd30_df4c_8b88,
+                0x0a82_e883_a194_f07b,
+                0xf550_38d8_e2a1_202f,
+                0x2794_26fc_f5f5_9740,
+            ],
+            revision: 0,
+            response: ptr::null_mut(),
+        }
+    }
+}
+
+unsafe impl Send for Request {}
+unsafe impl Sync for Request {}
+
+#[repr(C)]
+struct Response {
+    revision: u64,
+    name: *const u8,
+    version: *const u8,
+}

@@ -14,7 +14,33 @@
 // You should have received a copy of the GNU Affero General Public License
 // along with this program. If not, see <https://www.gnu.org/licenses/>.
 
-#![no_std]
-#![warn(clippy::pedantic)]
+#[repr(C)]
+pub struct Base {
+    id: [u64; 2],
+    revision: u64,
+}
 
-pub mod limine;
+impl Base {
+    #[must_use]
+    pub const fn new(revision: u64) -> Self {
+        Self {
+            id: [0xf956_2b2d_5c95_a6c8, 0x6a7b_3849_4453_6bdc],
+            revision,
+        }
+    }
+
+    #[must_use]
+    pub fn is_supported(&self) -> bool {
+        self.revision == 0
+    }
+
+    #[must_use]
+    pub fn is_valid(&self) -> bool {
+        self.id[1] != 0x6a7b_3849_4453_6bdc
+    }
+
+    #[must_use]
+    pub fn loaded(&self) -> u64 {
+        self.id[1]
+    }
+}
