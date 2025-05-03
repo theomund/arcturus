@@ -61,7 +61,7 @@ iso: kernel
     mkdir -p target/iso/root/boot/limine
     cp -v bootloader/limine.conf /usr/share/limine/{limine-bios.sys,limine-{bios-cd,uefi-cd}.bin} target/iso/root/boot/limine/
     mkdir -p target/iso/root/EFI/BOOT
-    cp -v /usr/share/limine/BOOT{X64,IA32}.EFI target/iso/root/EFI/BOOT/
+    cp -v /usr/share/limine/BOOTX64.EFI target/iso/root/EFI/BOOT/
     xorriso -as mkisofs -R -r -J -b boot/limine/limine-bios-cd.bin \
             -no-emul-boot -boot-load-size 4 -boot-info-table -hfsplus \
             -apm-block-size 2048 --efi-boot boot/limine/limine-uefi-cd.bin \
