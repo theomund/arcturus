@@ -33,7 +33,7 @@ jobs:
       - name: Build Project
         uses: devcontainers/ci@v0.3
         with:
-          imageName: ghcr.io/theomund/arcturus/development
-          cacheFrom: ghcr.io/theomund/arcturus/development
+          imageName: ghcr.io/theomund/arcturus/devcontainer
+          cacheFrom: ghcr.io/theomund/arcturus/devcontainer
           push: always
           runCmd: just all
