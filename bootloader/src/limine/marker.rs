@@ -14,9 +14,11 @@
 // You should have received a copy of the GNU Affero General Public License
 // along with this program. If not, see <https://www.gnu.org/licenses/>.
 
+use core::ffi::c_ulong;
+
 #[repr(transparent)]
 pub struct RequestsStart {
-    id: [u64; 4],
+    id: [c_ulong; 4],
 }
 
 impl Default for RequestsStart {
@@ -41,7 +43,7 @@ impl RequestsStart {
 
 #[repr(transparent)]
 pub struct RequestsEnd {
-    id: [u64; 2],
+    id: [c_ulong; 2],
 }
 
 impl Default for RequestsEnd {

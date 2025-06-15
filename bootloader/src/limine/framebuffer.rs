@@ -14,69 +14,72 @@
 // You should have received a copy of the GNU Affero General Public License
 // along with this program. If not, see <https://www.gnu.org/licenses/>.
 
-use core::{ffi::c_void, ptr, slice};
+use core::{
+    ffi::{c_char, c_ulong, c_ushort, c_void},
+    ptr, slice,
+};
 
 #[repr(C)]
 pub struct Framebuffer {
     address: *mut c_void,
-    width: u64,
-    height: u64,
-    pitch: u64,
-    bpp: u16,
-    red_mask_size: u8,
-    red_mask_shift: u8,
-    green_mask_size: u8,
-    green_mask_shift: u8,
-    blue_mask_size: u8,
-    blue_mask_shift: u8,
-    unused: [u8; 7],
-    edid_size: u64,
+    width: c_ulong,
+    height: c_ulong,
+    pitch: c_ulong,
+    bpp: c_ushort,
+    red_mask_size: c_char,
+    red_mask_shift: c_char,
+    green_mask_size: c_char,
+    green_mask_shift: c_char,
+    blue_mask_size: c_char,
+    blue_mask_shift: c_char,
+    unused: [c_char; 7],
+    edid_size: c_ulong,
     edid: *const c_void,
-    mode_count: u64,
+    mode_count: c_ulong,
     modes: *const *const Mode,
 }
 
 impl Framebuffer {
     #[must_use]
-    pub fn address(&self) -> *mut u8 {
+    pub fn address(&self) -> *mut c_char {
         self.address.cast()
     }
 
     #[must_use]
-    pub fn width(&self) -> u64 {
+    pub fn width(&self) -> c_ulong {
         self.width
     }
 
     #[must_use]
-    pub fn height(&self) -> u64 {
+    pub fn height(&self) -> c_ulong {
         self.height
     }
 
     #[must_use]
-    pub fn pitch(&self) -> u64 {
+    pub fn pitch(&self) -> c_ulong {
         self.pitch
     }
 }
 
 #[repr(C)]
 pub struct Mode {
-    pitch: u64,
-    width: u64,
-    height: u64,
-    bpp: u64,
-    memory_model: u8,
-    red_mask_size: u8,
-    red_mask_shift: u8,
-    green_mask_size: u8,
-    green_mask_shift: u8,
-    blue_mask_size: u8,
-    blue_mask_shift: u8,
+    pitch: c_ulong,
+    width: c_ulong,
+    height: c_ulong,
+    bpp: c_ulong,
+    memory_model: c_char,
+    red_mask_size: c_char,
+    red_mask_shift: c_char,
+    green_mask_size: c_char,
+    green_mask_shift: c_char,
+    blue_mask_size: c_char,
+    blue_mask_shift: c_char,
 }
 
 #[repr(C)]
 pub struct Request {
-    id: [u64; 4],
-    revision: u64,
+    id: [c_ulong; 4],
+    revision: c_ulong,
     response: *const Response,
 }
 
@@ -119,19 +122,19 @@ unsafe impl Sync for Request {}
 
 #[repr(C)]
 pub struct Response {
-    revision: u64,
-    framebuffer_count: u64,
+    revision: c_ulong,
+    framebuffer_count: c_ulong,
     framebuffers: *const *const Framebuffer,
 }
 
 impl Response {
     #[must_use]
-    pub fn revision(&self) -> u64 {
+    pub fn revision(&self) -> c_ulong {
         self.revision
     }
 
     #[must_use]
-    pub fn framebuffer_count(&self) -> u64 {
+    pub fn framebuffer_count(&self) -> c_ulong {
         self.framebuffer_count
     }
 

@@ -15,14 +15,14 @@
 // along with this program. If not, see <https://www.gnu.org/licenses/>.
 
 use core::{
-    ffi::{CStr, c_char},
+    ffi::{CStr, c_char, c_ulong},
     ptr,
 };
 
 #[repr(C)]
 pub struct Request {
-    id: [u64; 4],
-    revision: u64,
+    id: [c_ulong; 4],
+    revision: c_ulong,
     response: *const Response,
 }
 
@@ -65,14 +65,14 @@ unsafe impl Sync for Request {}
 
 #[repr(C)]
 pub struct Response {
-    revision: u64,
+    revision: c_ulong,
     name: *const c_char,
     version: *const c_char,
 }
 
 impl Response {
     #[must_use]
-    pub fn revision(&self) -> u64 {
+    pub fn revision(&self) -> c_ulong {
         self.revision
     }
 
