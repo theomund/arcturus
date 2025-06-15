@@ -40,7 +40,7 @@ impl<T> Spinlock<T> {
         }
     }
 
-    pub fn lock(&self) -> Guard<T> {
+    pub fn lock(&self) -> Guard<'_, T> {
         while self.locked.swap(true, Acquire) {
             core::hint::spin_loop();
         }
