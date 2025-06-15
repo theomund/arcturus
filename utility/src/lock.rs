@@ -67,3 +67,16 @@ impl<T> Drop for Guard<'_, T> {
         self.lock.locked.store(false, Release);
     }
 }
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn test_integer() {
+        let spin = Spinlock::new(42);
+        let value = *spin.lock();
+
+        assert_eq!(value, 42);
+    }
+}
