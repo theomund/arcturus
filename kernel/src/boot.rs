@@ -43,7 +43,7 @@ pub fn init() {
     let response = INFO_REQUEST.response().unwrap();
     assert_eq!(response.revision(), 0);
     assert_eq!(response.name(), "Limine");
-    assert_eq!(response.version(), "9.3.3");
+    assert_eq!(response.version(), "9.3.4");
 
     info!("Initialized the boot module.");
 }
