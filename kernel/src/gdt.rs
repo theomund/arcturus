@@ -22,7 +22,7 @@ use utility::lock::Spinlock;
 use crate::tss::TSS;
 
 pub static GDT: Spinlock<LazyCell<Table>> =
-    Spinlock::new(LazyCell::new(|| Table::new(&**TSS.lock())));
+    Spinlock::new(LazyCell::new(|| Table::new(&raw const **TSS.lock())));
 
 pub fn init() {
     GDT.lock().load();

@@ -22,14 +22,14 @@ RUN dnf copr enable -y theomund/copr \
     gcc-15.1.1 \
     git-2.49.0 \
     just-1.40.0 \
-    limine-9.2.3 \
-    lldb-20.1.3 \
-    qemu-system-x86-9.2.3 \
-    rustup-1.27.1 \
-    vale-3.11.2 \
+    limine-9.3.4 \
+    lldb-20.1.6 \
+    qemu-system-x86-9.2.4 \
+    rustup-1.28.2 \
+    vale-3.12.0 \
     xorriso-1.5.6 \
-    yamllint-1.37.0 \
+    yamllint-1.37.1 \
     && dnf clean all
 RUN useradd -m developer
 USER developer
-RUN rustup-init -y --default-toolchain nightly-2025-05-03 --target x86_64-unknown-none
+RUN rustup-init -y --default-toolchain nightly-2025-06-16 --target x86_64-unknown-none

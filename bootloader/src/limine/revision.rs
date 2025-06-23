@@ -14,15 +14,17 @@
 // You should have received a copy of the GNU Affero General Public License
 // along with this program. If not, see <https://www.gnu.org/licenses/>.
 
+use core::ffi::c_ulong;
+
 #[repr(C)]
 pub struct Base {
-    id: [u64; 2],
-    revision: u64,
+    id: [c_ulong; 2],
+    revision: c_ulong,
 }
 
 impl Base {
     #[must_use]
-    pub const fn new(revision: u64) -> Self {
+    pub const fn new(revision: c_ulong) -> Self {
         Self {
             id: [0xf956_2b2d_5c95_a6c8, 0x6a7b_3849_4453_6bdc],
             revision,
@@ -40,7 +42,7 @@ impl Base {
     }
 
     #[must_use]
-    pub fn loaded(&self) -> u64 {
+    pub fn loaded(&self) -> c_ulong {
         self.id[1]
     }
 }

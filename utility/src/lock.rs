@@ -40,7 +40,7 @@ impl<T> Spinlock<T> {
         }
     }
 
-    pub fn lock(&self) -> Guard<T> {
+    pub fn lock(&self) -> Guard<'_, T> {
         while self.locked.swap(true, Acquire) {
             core::hint::spin_loop();
         }
@@ -65,5 +65,18 @@ impl<T> DerefMut for Guard<'_, T> {
 impl<T> Drop for Guard<'_, T> {
     fn drop(&mut self) {
         self.lock.locked.store(false, Release);
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn test_integer() {
+        let spin = Spinlock::new(42);
+        let value = *spin.lock();
+
+        assert_eq!(value, 42);
     }
 }
